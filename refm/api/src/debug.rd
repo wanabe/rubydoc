@@ -1,3 +1,5 @@
+category Development
+
 Ruby デバッガです。Ruby スクリプトのソースコードデバッグに使用します。
 
 また、Emacs を使用したインタフェース rubydb[23]x.el が
