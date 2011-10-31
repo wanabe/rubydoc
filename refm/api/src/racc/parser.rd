@@ -1,3 +1,5 @@
+category Text
+
 パーサジェネレータ Racc のランタイムライブラリです。
 
 = class Racc::Parser

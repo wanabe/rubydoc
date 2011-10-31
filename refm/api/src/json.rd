@@ -1,4 +1,5 @@
 #@since 1.9.1
+category FileFormat
 
 JSON (JavaScript Object Notation)を扱うライブラリです。
 

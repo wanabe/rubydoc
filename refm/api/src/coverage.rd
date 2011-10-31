@@ -1,4 +1,5 @@
 #@since 1.9.1
+category Development
 カバレッジを測定するためのライブラリです。
 
 === 使い方
