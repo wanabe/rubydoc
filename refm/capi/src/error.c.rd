@@ -1,4 +1,5 @@
 --- void rb_raise(VALUE err, const char *fmt, ...)
+category Exception/Jump
 
 クラス err の例外を発生します。fmt とその後の引数は、
 printf と同じ形式でエラーメッセージを表します。

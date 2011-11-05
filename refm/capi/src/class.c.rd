@@ -1,33 +1,5 @@
---- static int clone_method(ID mid, NODE *body, st_table *tbl)
-
-m_tbl 格納形式のメソッド (構文木) をコピーして返します。
-ST_CONTINUE を返します。
-
---- static VALUE include_class_new(VALUE module, VALUE super)
-
-super をスーパークラスとして
-モジュールの「化身」クラスを作成し返します。
-
---- static int ins_methods_i(ID key, NODE *body, VALUE ary)
-
-rb_class_instance_methods() のイテレータブロック (通常版)。
-
---- static int ins_methods_priv_i(ID key, NODE *body, VALUE ary)
-
-rb_class_instance_methods() のイテレータブロック
-(private メソッド版)。
-
---- static int ins_methods_prot_i(ID key, NODE *body, VALUE ary)
-
-rb_class_instance_methods() のイテレータブロック
-(protected メソッド版)。
-
---- static VALUE method_list(VALUE mod, int option, int (*func)())
-
-モジュール mod に定義されているメソッドに対して
-順番に func を繰り返し呼び出します。
-
 --- VALUE rb_class_boot(VALUE super)
+category Class/Module
 
 スーパークラスを super とするクラスオブジェクトを作成し、返します。
 
@@ -37,17 +9,20 @@ rb_class_instance_methods() のイテレータブロック
 受けて、super に対し inherited メソッドを呼び出します。
 
 --- VALUE rb_class_instance_methods(int argc, VALUE *argv, VALUE mod)
+category Method
 
 Module#instance_methods の実体。
 モジュール mod に定義されている public メソッド名の
 リストを文字列の配列で返します。
 
 --- VALUE rb_class_new(VALUE super)
+category Class/Module
 
 super をスーパークラスとして
 新しいクラスオブジェクトを生成し、返します。
 
 --- VALUE rb_class_private_instance_methods(int argc, VALUE *argv, VALUE mod)
+category Method
 
 Module#private_instance_methods の実体。
 モジュール mod に定義されている private メソッド名の
@@ -60,6 +35,7 @@ Module#protected_instance_methods の実体。
 リストを文字列の配列で返します。
 
 --- void rb_define_alias(VALUE klass, const char *new, const char *old)
+category Method
 
 クラス klass のインスタンスメソッド old の
 別名 new を定義します。
@@ -71,6 +47,7 @@ read が真のときは name を定義し、
 write が真のときは name= を定義します。
 
 --- VALUE rb_define_class(const char *name, VALUE super)
+category Class/Module
 
 クラス super の下位クラス name を作成し返します。
 
@@ -86,6 +63,7 @@ write が真のときは name= を定義します。
 を作成し返します。
 
 --- void rb_define_global_function(const char *name, VALUE (*func)(), int argc)
+category Method
 
 関数 name を定義します。
 func と argc は rb_define_method と同じです。
@@ -122,15 +100,18 @@ klass に public メソッド name を定義します。
 rb_define_method と同じです。
 
 --- VALUE rb_define_module(const char *name)
+category Class/Module
 
 モジュール name を作成し返します。
 
 --- void rb_define_module_function(VALUE module, const char *name, VALUE (*func)(), int argc)
+category Method
 
 モジュール module にモジュール関数 name を定義します。
 func と argc は rb_define_method と同じです。
 
 --- VALUE rb_define_module_id(ID id)
+category Class/Module
 
 名前が id である新しいモジュールを定義し、それを返します。
 モジュール→名前 (定数) のリンクは確立しますが
@@ -141,6 +122,7 @@ func と argc は rb_define_method と同じです。
 モジュール outer::name を作成し返します。
 
 --- void rb_define_private_method(VALUE klass, const char *name, VALUE(*func)(), int argc)
+category Method
 
 クラス klass にプライベートインスタンスメソッド name を
 定義します。その実体は関数 func であり、その関数がとる
@@ -162,6 +144,7 @@ obj に特異メソッド name を定義します。
 ついては rb_define_method の記述を参照してください。
 
 --- void rb_include_module(VALUE klass, VALUE module)
+category Class/Module
 
 Module#append_features の実体。
 クラスまたはモジュール klass にモジュール module を
@@ -200,12 +183,14 @@ Module#append_features の実体。
 新しいモジュールオブジェクトを作成し、返します。
 
 --- VALUE rb_obj_singleton_methods(int argc, VALUE *argv, VALUE obj)
+category Method
 
 Object#singleton_methods の実体。
 オブジェクト obj に定義されている特異メソッド名のリストを
 文字列の配列で返す。
 
 --- int rb_scan_args(int argc, const VALUE *argv, const char *fmt, ...)
+category Method
 
 長さ argc の配列 argv を fmt に従って
 解析し、第四引数以降で渡されたアドレスに書き込みます。
@@ -239,6 +224,7 @@ fmt のフォーマットは以下の通りです。
       def some_method(a, *rest, &block)
 
 --- VALUE rb_singleton_class(VALUE obj)
+category Class/Module
 
 obj に特異クラスを導入し、その特異クラスを返します。
 すでに特異クラスが導入されているときはそれをそのまま返します。
@@ -260,5 +246,40 @@ klass が特異クラスでないときはただ klass を返します。
 super をスーパークラスとする特異クラスを生成し、返します。
 
 --- void rb_undef_method(VALUE klass, const char *name)
+category Method
 
 クラス klass のインスタンスメソッド name を undef します。
+
+#@if(visibility > "1")
+
+--- static int clone_method(ID mid, NODE *body, st_table *tbl)
+category
+
+m_tbl 格納形式のメソッド (構文木) をコピーして返します。
+ST_CONTINUE を返します。
+
+--- static VALUE include_class_new(VALUE module, VALUE super)
+
+super をスーパークラスとして
+モジュールの「化身」クラスを作成し返します。
+
+--- static int ins_methods_i(ID key, NODE *body, VALUE ary)
+
+rb_class_instance_methods() のイテレータブロック (通常版)。
+
+--- static int ins_methods_priv_i(ID key, NODE *body, VALUE ary)
+
+rb_class_instance_methods() のイテレータブロック
+(private メソッド版)。
+
+--- static int ins_methods_prot_i(ID key, NODE *body, VALUE ary)
+
+rb_class_instance_methods() のイテレータブロック
+(protected メソッド版)。
+
+--- static VALUE method_list(VALUE mod, int option, int (*func)())
+
+モジュール mod に定義されているメソッドに対して
+順番に func を繰り返し呼び出します。
+
+#@end

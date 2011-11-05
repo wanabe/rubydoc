@@ -1,4 +1,104 @@
+--- VALUE rb_backref_get(void)
+category Regexp
+
+現在の SCOPE の $~ の値を返します。
+
+--- void rb_backref_set(VALUE val)
+
+現在の SCOPE の $~ に val を代入します。
+
+--- NODE *rb_compile_cstr(const char *f, const char *s, int len, int line)
+category Compile/Eval
+
+C の文字列 s を構文木にコンパイルし、ruby_eval_tree と
+ruby_eval_tree_begin に格納します。ruby_eval_tree を返します。
+またコンパイルするときにファイル f の line 行目からをコンパイル
+していると仮定します。
+
+--- NODE *rb_compile_file(const char *f, VALUE file, int start)
+
+Ruby の IO オブジェクト file から文字列を読み込み、
+それを Ruby プログラムとして構文木にコンパイルします。
+作成した構文木は ruby_eval_tree と ruby_eval_tree_begin に
+格納し、同時に ruby_eval_tree を返します。
+またコンパイルするときにファイル f の line 行目からをコンパイル
+していると仮定します。
+
+--- NODE *rb_compile_string(const char *f, VALUE s, int line)
+
+Ruby の文字列 s を構文木にコンパイルし、ruby_eval_tree と
+ruby_eval_tree_begin に格納します。ruby_eval_tree を返します。
+またコンパイルするときにファイル f の line 行目からをコンパイル
+していると仮定します。
+
+--- char *rb_id2name(ID id)
+category Symbol/Id
+
+id に対応する文字列を返します。
+返り値は開放できません。
+
+--- ID rb_id_attrset(ID id)
+
+--- ID rb_intern(const char *name)
+
+任意の char* と一対一に対応する整数 ID を返す。
+
+--- int rb_is_class_id(ID id)
+
+クラス変数名として有効な ID ならば真。
+
+--- int rb_is_const_id(ID id)
+
+定数名として有効な ID ならば真。
+
+--- int rb_is_instance_id(ID id)
+
+インスタンス変数名として有効な ID ならば真。
+
+--- int rb_is_local_id(ID id)
+
+ローカル変数名として有効な ID ならば真。
+
+--- VALUE rb_lastline_get(void)
+category I/O
+
+現在評価中の SCOPE の $_ の値を取得します。
+
+--- void rb_lastline_set(VALUE val)
+
+現在評価中の SCOPE の $_ に val を代入します。
+
+--- void rb_parser_append_print(void)
+category Init/Finalize
+
+ruby の -p オプションの実装。
+ループと print のノードを ruby_eval_tree に加えます。
+
+--- void rb_parser_while_loop(int chop, int split)
+
+ruby の -n オプションの実装。
+ループと print のノードを ruby_eval_tree に加えます。
+
+--- VALUE rb_sym_all_symbols(void)
+category Symbol/Id
+
+呼び出し時までに変換が行われたすべてのシンボルの
+配列を返す。
+
+#@if(visibility > "0")
+
+--- NODE *rb_node_newnode(enum node_type type, NODE *a0, NODE *a1, NODE *a2)
+category
+
+ノードタイプが type で a0 a1 a2 を
+要素に持つノードを生成し、返します。
+
+#@end
+
+#@if(visibility > "1")
+
 --- static NODE *arg_add(NODE *node1, NODE *node2)
+category
 
 --- static void arg_ambiguous(void)
 
@@ -200,87 +300,6 @@ c が EOF (-1) のときはなにもしません。
 
 --- static void rb_backref_error(NODE *node)
 
---- VALUE rb_backref_get(void)
-
-現在の SCOPE の $~ の値を返します。
-
---- void rb_backref_set(VALUE val)
-
-現在の SCOPE の $~ に val を代入します。
-
---- NODE *rb_compile_cstr(const char *f, const char *s, int len, int line)
-
-C の文字列 s を構文木にコンパイルし、ruby_eval_tree と
-ruby_eval_tree_begin に格納します。ruby_eval_tree を返します。
-またコンパイルするときにファイル f の line 行目からをコンパイル
-していると仮定します。
-
---- NODE *rb_compile_file(const char *f, VALUE file, int start)
-
-Ruby の IO オブジェクト file から文字列を読み込み、
-それを Ruby プログラムとして構文木にコンパイルします。
-作成した構文木は ruby_eval_tree と ruby_eval_tree_begin に
-格納し、同時に ruby_eval_tree を返します。
-またコンパイルするときにファイル f の line 行目からをコンパイル
-していると仮定します。
-
---- NODE *rb_compile_string(const char *f, VALUE s, int line)
-
-Ruby の文字列 s を構文木にコンパイルし、ruby_eval_tree と
-ruby_eval_tree_begin に格納します。ruby_eval_tree を返します。
-またコンパイルするときにファイル f の line 行目からをコンパイル
-していると仮定します。
-
---- char *rb_id2name(ID id)
-
-id に対応する文字列を返します。
-返り値は開放できません。
-
---- ID rb_id_attrset(ID id)
-
---- ID rb_intern(const char *name)
-
-任意の char* と一対一に対応する整数 ID を返す。
-
---- int rb_is_class_id(ID id)
-
-クラス変数名として有効な ID ならば真。
-
---- int rb_is_const_id(ID id)
-
-定数名として有効な ID ならば真。
-
---- int rb_is_instance_id(ID id)
-
-インスタンス変数名として有効な ID ならば真。
-
---- int rb_is_local_id(ID id)
-
-ローカル変数名として有効な ID ならば真。
-
---- VALUE rb_lastline_get(void)
-
-現在評価中の SCOPE の $_ の値を取得します。
-
---- void rb_lastline_set(VALUE val)
-
-現在評価中の SCOPE の $_ に val を代入します。
-
---- NODE *rb_node_newnode(enum node_type type, NODE *a0, NODE *a1, NODE *a2)
-
-ノードタイプが type で a0 a1 a2 を
-要素に持つノードを生成し、返します。
-
---- void rb_parser_append_print(void)
-
-ruby の -p オプションの実装。
-ループと print のノードを ruby_eval_tree に加えます。
-
---- void rb_parser_while_loop(int chop, int split)
-
-ruby の -n オプションの実装。
-ループと print のノードを ruby_eval_tree に加えます。
-
 --- static struct kwtable *rb_reserved_word(const char *str, unsigned int len)
 
 長さ len の文字列 str が予約語であれば
@@ -294,11 +313,6 @@ NULL を返します。
                                       それを格納する。なければ id[0] と同じ  */
         enum lex_state state;  /* 遷移すべきlex_state */
     };
-
---- VALUE rb_sym_all_symbols(void)
-
-呼び出し時までに変換が行われたすべてのシンボルの
-配列を返す。
 
 --- static int read_escape(void)
 
@@ -421,3 +435,5 @@ yyparse から呼び出されるスキャンルーチンです。
 
 パースを開始します。
 この関数は yacc が自動的に生成するので parse.y には存在しません。
+
+#@end

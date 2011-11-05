@@ -1,4 +1,170 @@
+--- VALUE rb_any_to_s(VALUE obj)
+category String
+
+--- VALUE rb_Array(VALUE obj)
+category Array
+
+obj が Array でない場合は to_a を使って
+Array に変換します。
+
+--- VALUE rb_check_convert_type(VALUE val, int type, const char *tname, const char *method)
+category Conversion
+
+val.method を実行してクラス tname のインスタンスを返します。
+val がメソッド method を持たなければ nil を返します。
+
+type は、T_ARRAY, T_STRING などの構造体を表す ID です。
+method の結果の型が type でなければ例外 TypeError が発生します。
+
+--- VALUE rb_class_new_instance(int argc, VALUE *argv, VALUE klass)
+category Object
+
+[[m:Class#new]] の実体。
+
+--- VALUE rb_class_real(VALUE cl)
+category Class/Module
+
+特異クラスや化身クラス (T_ICLASS) を飛ばして cl の
+スーパークラスを辿り、Ruby レベルに露出してもよいクラスを返します。
+
+例:
+   rb_class_real(RBASIC(klass)->super)
+
+rb_obj_class(obj) は、obj のクラスを返す汎用の関数(Object#type と
+同じ)だが、obj が Qtrue などでない RBasic 構造のものであることが
+わかっているなら
+
+    rb_class_real(RBASIC(obj)->klass)
+
+でも良い。(が、やはり rb_obj_class(obj) を使う方が無難だろう)
+
+--- VALUE rb_convert_type(VALUE val, int type, const char *tname, const char *method)
+category Conversion
+
+オブジェクト val をクラス type のインスタンスに変換します。
+変換には、val.method の戻り値が使われます。
+
+val がもともと type クラスのインスタンスなら val を
+そのまま返します。
+
+--- double rb_cstr_to_dbl(const char *p, int badcheck)
+category Numeric
+
+--- VALUE rb_eql(VALUE obj1, VALUE obj2)
+category
+
+obj1.equal?(obj2) ならば Qtrue、
+そうでないならば Qfalse。
+
+--- VALUE rb_equal(VALUE obj1, VALUE obj2)
+
+obj1 == obj2 ならば Qtrue、
+そうでないならば Qfalse。
+
+--- VALUE rb_Float(VALUE val)
+category Numeric
+
+--- VALUE rb_inspect(VALUE obj)
+category String
+
+obj.inspect の実体。
+
+--- VALUE rb_Integer(VALUE obj)
+category Numeric
+
+obj が Ruby の整数でない場合は to_i を使って
+Integer に変換します。
+
+--- double rb_num2dbl(VALUE val)
+
+任意の Numeric のオブジェクトを double に変換します。
+
+--- VALUE rb_obj_alloc(VALUE klass)
+category Object
+
+klass のインスタンスを作成する。
+
+--- VALUE rb_obj_class(VALUE obj)
+category Class/Module
+
+[[m:Object#class]] の実体です。
+
+--- VALUE rb_obj_clone(VALUE obj)
+category Object
+
+[[m:Object#clone]] の実体です。
+
+--- VALUE rb_obj_dup(VALUE obj)
+
+[[m:Object#dup]] の実体です。
+
+--- VALUE rb_obj_freeze(VALUE obj)
+category Flag
+
+[[m:Object#freeze]]
+
+--- VALUE rb_obj_frozen_p(VALUE obj)
+
+[[m:Object#frozen?]]
+
+--- VALUE rb_obj_id(VALUE obj)
+category
+
+[[m:Object#id]] の実体。
+
+--- VALUE rb_obj_is_instance_of(VALUE obj, VALUE klass)
+category Class/Module
+
+obj がクラス klass のインスタンスならば真。
+
+--- VALUE rb_obj_is_kind_of(VALUE obj, VALUE klass)
+
+obj がクラス klass およびそのサブクラスの
+インスタンスのとき真。
+
+--- VALUE rb_obj_taint(VALUE obj)
+category Security
+
+[[m:Object#taint]]
+
+--- VALUE rb_obj_tainted(VALUE obj)
+
+[[m:Object#tainted?]]
+
+--- VALUE rb_obj_untaint(VALUE obj)
+
+[[m:Object#untaint]]
+
+--- char *rb_str2cstr(VALUE str, int *len)
+category String
+
+strl を C の文字列に変換します。第二引数も与えると
+*len にバイト長を書き込みます。str が String
+でない場合は to_str での変換を試みます。
+
+--- double rb_str_to_dbl(VALUE str, int badcheck)
+category Numeric
+
+--- VALUE rb_String(VALUE val)
+category String
+
+[[m:Kernel.#String]] の実体。
+val を文字列に変換します。
+
+--- VALUE rb_to_id(VALUE name)
+category Symbol/Id
+
+String・Fixnum・Symbol を ID に変換します。
+
+--- VALUE rb_to_int(VALUE val)
+category Numeric
+
+val を to_int メソッドを使って Ruby の整数に変換します。
+
+#@if(visibility > "1")
+
 --- static VALUE boot_defclass(char *name, VALUE super)
+category
 
 (まだ) メタクラスを持たないクラスを作成します。
 三つのメタオブジェクト Object, Module, Class を
@@ -34,21 +200,6 @@
 
 --- static VALUE rb_any_to_a(VALUE obj)
 
---- VALUE rb_any_to_s(VALUE obj)
-
---- VALUE rb_Array(VALUE obj)
-
-obj が Array でない場合は to_a を使って
-Array に変換します。
-
---- VALUE rb_check_convert_type(VALUE val, int type, const char *tname, const char *method)
-
-val.method を実行してクラス tname のインスタンスを返します。
-val がメソッド method を持たなければ nil を返します。
-
-type は、T_ARRAY, T_STRING などの構造体を表す ID です。
-method の結果の型が type でなければ例外 TypeError が発生します。
-
 --- static VALUE rb_class_allocate_instance(VALUE klass)
 
 [[m:Class#allocate]] の実体。
@@ -57,49 +208,9 @@ method の結果の型が type でなければ例外 TypeError が発生します。
 
 [[m:Class#initialize]] の実体。
 
---- VALUE rb_class_new_instance(int argc, VALUE *argv, VALUE klass)
-
-[[m:Class#new]] の実体。
-
---- VALUE rb_class_real(VALUE cl)
-
-特異クラスや化身クラス (T_ICLASS) を飛ばして cl の
-スーパークラスを辿り、Ruby レベルに露出してもよいクラスを返します。
-
-例:
-   rb_class_real(RBASIC(klass)->super)
-
-rb_obj_class(obj) は、obj のクラスを返す汎用の関数(Object#type と
-同じ)だが、obj が Qtrue などでない RBasic 構造のものであることが
-わかっているなら
-
-    rb_class_real(RBASIC(obj)->klass)
-
-でも良い。(が、やはり rb_obj_class(obj) を使う方が無難だろう)
-
 --- static VALUE rb_class_s_new(int argc, VALUE *argv)
 
 --- static VALUE rb_class_superclass(VALUE klass)
-
---- VALUE rb_convert_type(VALUE val, int type, const char *tname, const char *method)
-
-オブジェクト val をクラス type のインスタンスに変換します。
-変換には、val.method の戻り値が使われます。
-
-val がもともと type クラスのインスタンスなら val を
-そのまま返します。
-
---- double rb_cstr_to_dbl(const char *p, int badcheck)
-
---- VALUE rb_eql(VALUE obj1, VALUE obj2)
-
-obj1.equal?(obj2) ならば Qtrue、
-そうでないならば Qfalse。
-
---- VALUE rb_equal(VALUE obj1, VALUE obj2)
-
-obj1 == obj2 ならば Qtrue、
-そうでないならば Qfalse。
 
 --- static VALUE rb_f_array(VALUE obj, VALUE arg)
 
@@ -110,17 +221,6 @@ obj1 == obj2 ならば Qtrue、
 --- static VALUE rb_f_string(VALUE obj, VALUE arg)
 
 --- static VALUE rb_false(VALUE obj)
-
---- VALUE rb_Float(VALUE val)
-
---- VALUE rb_inspect(VALUE obj)
-
-obj.inspect の実体。
-
---- VALUE rb_Integer(VALUE obj)
-
-obj が Ruby の整数でない場合は to_i を使って
-Integer に変換します。
 
 --- static VALUE rb_mod_attr(int argc, VALUE *argv, VALUE klass)
 
@@ -154,56 +254,15 @@ Integer に変換します。
 
 --- static VALUE rb_module_s_alloc(VALUE klass)
 
---- double rb_num2dbl(VALUE val)
-
-任意の Numeric のオブジェクトを double に変換します。
-
---- VALUE rb_obj_alloc(VALUE klass)
-
-klass のインスタンスを作成する。
-
---- VALUE rb_obj_class(VALUE obj)
-
-[[m:Object#class]] の実体です。
-
---- VALUE rb_obj_clone(VALUE obj)
-
-[[m:Object#clone]] の実体です。
-
 --- static VALUE rb_obj_dummy(void)
-
---- VALUE rb_obj_dup(VALUE obj)
-
-[[m:Object#dup]] の実体です。
 
 --- static VALUE rb_obj_equal(VALUE obj1, VALUE obj2)
 
 obj1 と obj2 が同一のオブジェクトなら真。
 
---- VALUE rb_obj_freeze(VALUE obj)
-
-[[m:Object#freeze]]
-
---- VALUE rb_obj_frozen_p(VALUE obj)
-
-[[m:Object#frozen?]]
-
---- VALUE rb_obj_id(VALUE obj)
-
-[[m:Object#id]] の実体。
-
 --- static VALUE rb_obj_inspect(VALUE obj)
 
 [[m:Object#inspect]] の実体。
-
---- VALUE rb_obj_is_instance_of(VALUE obj, VALUE klass)
-
-obj がクラス klass のインスタンスならば真。
-
---- VALUE rb_obj_is_kind_of(VALUE obj, VALUE klass)
-
-obj がクラス klass およびそのサブクラスの
-インスタンスのとき真。
 
 --- static VALUE rb_obj_methods(VALUE obj)
 
@@ -216,39 +275,6 @@ obj がクラス klass およびそのサブクラスの
 --- static VALUE rb_obj_protected_methods(VALUE obj)
 
 [[m:Object#protected_methods]] の実体。
-
---- VALUE rb_obj_taint(VALUE obj)
-
-[[m:Object#taint]]
-
---- VALUE rb_obj_tainted(VALUE obj)
-
-[[m:Object#tainted?]]
-
---- VALUE rb_obj_untaint(VALUE obj)
-
-[[m:Object#untaint]]
-
---- char *rb_str2cstr(VALUE str, int *len)
-
-strl を C の文字列に変換します。第二引数も与えると
-*len にバイト長を書き込みます。str が String
-でない場合は to_str での変換を試みます。
-
---- double rb_str_to_dbl(VALUE str, int badcheck)
-
---- VALUE rb_String(VALUE val)
-
-[[m:Kernel.#String]] の実体。
-val を文字列に変換します。
-
---- VALUE rb_to_id(VALUE name)
-
-String・Fixnum・Symbol を ID に変換します。
-
---- VALUE rb_to_int(VALUE val)
-
-val を to_int メソッドを使って Ruby の整数に変換します。
 
 --- static VALUE rb_to_integer(VALUE val, char *method)
 
@@ -272,3 +298,4 @@ Qtrue を返します。
 
 --- static VALUE true_xor(VALUE obj, VALUE obj2)
 
+#@end

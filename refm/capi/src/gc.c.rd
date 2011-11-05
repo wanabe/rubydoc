@@ -1,6 +1,7 @@
 #@# intern.h
 
 --- void rb_memerror(void)
+category Exception/Jump
 
 NoMemoryErrorをraiseする。
 しかしraise自体にもメモリ容量を使うため、メモリが足りない状況
@@ -9,10 +10,12 @@ NoMemoryErrorをraiseする。
 なっている。
 
 --- int ruby_stack_check(void)
+category GC
 
 --- int ruby_stack_length(VALUE **p)
 
 --- void rb_gc_mark_locations(VALUE *start, VALUE *end)
+category GC
 
 --- void rb_mark_tbl(st_table *tbl)
 
@@ -50,21 +53,25 @@ GC を禁止します。
 GC を起動します。
 
 --- void Init_stack(VALUE *addr)
+category GC
 
 #@# ruby.h
 
 --- VALUE rb_newobj(void)
+category Object
 
 未使用のオブジェクト領域一つへのポインタを返す。
 返り値が返ってきたときは失敗はない。
 
 --- VALUE rb_data_object_alloc(VALUE klass, void *datap, RUBY_DATA_FUNC dmark, RUBY_DATA_FUNC dfree)
+category DataClass
 
 datap をラップするオブジェクトを生成し、返します。
 そのクラスは klass となり、datap をマークするときは
 dmark、解放するときは dfree を使うようになります。
 
 --- void rb_global_variable(VALUE *var)
+category GC
 
 [[f:rb_gc_register_address]] と同じです。
 
@@ -83,6 +90,7 @@ dmark、解放するときは dfree を使うようになります。
 #@# defines.h
 
 --- void *ruby_xmalloc(long size)
+category Memory
 
 引数と返り値は malloc() と同じ。
 ただしメモリ割り当てに失敗したときは
@@ -111,6 +119,7 @@ GC を行いそれでもだめなときは NoMemoryError を raise する。
 #@until 1.9.0
 
 --- void rb_gc_mark_children(VALUE ptr)
+category
 
 v から指されているオブジェクトを全てマークします。
 
@@ -125,12 +134,14 @@ frame をマークします。
 #@if(visibility > "0")
 
 --- void Init_heap(void)
+category
 
 #@end
 
 #@if(visibility > "1")
 
 --- static void add_heap(void)
+category
 
 Rubyオブジェクトのヒープスロットを増設する。
 

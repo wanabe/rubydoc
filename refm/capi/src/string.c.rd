@@ -1,4 +1,5 @@
 --- VALUE rb_str_new(const char *ptr, long len)
+category String
 
 ptr から len バイト分をコピーして
 Ruby の文字列を作成し返します。

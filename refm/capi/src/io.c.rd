@@ -1,4 +1,5 @@
 --- void rb_p(VALUE obj)
+category I/O
 
 p の実体。obj を見やすく出力します。
 
@@ -16,7 +17,10 @@ FMODE_READWRITE
 の論理和です。FMODE_READWRITEは、FMODE_READABLEと
 FMODE_WRITEABLEの論理和です。
 
+#@if(visibility > "1")
+
 --- static int rb_io_mode_flags2(int mode)
+category
 
 [[man:open(2)]] のようなモード指定modeをruby内部のモードフラグに変換します。
 
@@ -52,3 +56,5 @@ mode に "+" が含まれれば、子プロセスの標準入出力を
 
 生成した IO オブジェクトを返します。
 pnameが "-" であれば、子プロセスには、nil を返します
+
+#@end

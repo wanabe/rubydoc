@@ -1,4 +1,5 @@
 --- VALUE rb_ary_new()
+category Array
 
 空の Ruby の配列を作成し返します。
 

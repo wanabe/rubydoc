@@ -1,58 +1,15 @@
---- static int autoload_i(ID key, const char *name, st_table *tbl)
-
---- static VALUE classname(VALUE klass)
-
---- static int cv_i(ID key, VALUE value, VALUE ary)
-
---- static void cvar_override_check(VALUE id, VALUE a)
-
---- static int fc_i(ID key, VALUE value, struct fc_result *res)
-
---- static VALUE fc_path(struct fc_result *fc, ID name)
-
---- static VALUE find_class_path(VALUE klass)
-
-クラス klass のクラスパスを探索し、Ruby の文字列で返します。
-
---- static VALUE generic_ivar_defined(VALUE obj, ID id)
-
---- static VALUE generic_ivar_get(VALUE obj, ID id)
-
---- static int generic_ivar_remove(VALUE obj, ID id, VALUE *valp)
-
---- static void generic_ivar_set(VALUE obj, ID id, VALUE val)
-
---- static int givar_i(VALUE obj, st_table *tbl)
-
---- static int givar_mark_i(ID key, VALUE value)
-
---- static ID global_id(const char *name)
-
---- static int gvar_i(ID key, struct global_entry *entry, VALUE ary)
-
---- void Init_var_tables(void)
-
---- static int ivar_i(ID key, struct global_entry *entry, VALUE ary)
-
---- static int list_i(ID key, ID value, VALUE ary)
-
---- static int mark_global_entry(ID key, struct global_entry *entry)
-
---- static void mod_av_set(VALUE klass, ID id, VALUE val, int isconst)
-
---- static VALUE original_module(VALUE c)
-
 --- void rb_alias_variable(ID name1, ID name2)
+category Variable/Constant
 
 --- void rb_autoload(const char *klass, const char *filename)
+category Load
 
 --- int rb_autoload_defined(ID id)
-
---- static void rb_autoload_id(ID id, const char *filename)
 
 --- void rb_autoload_load(ID id)
 
 --- char *rb_class2name(VALUE klass)
+category Class/Module
 
 klass の名前を返します。
 返り値の内容を変更したり free してはいけません。
@@ -73,6 +30,7 @@ klass の名前を返します．klassが無名クラス、無名モジュー
 です。
 
 --- void rb_const_assign(VALUE klass, ID id, VALUE val)
+category Variable/Constant
 
 --- int rb_const_defined(VALUE klass, ID id)
 
@@ -150,8 +108,10 @@ klass のクラス変数 name に val を代入します。
 --- void rb_define_virtual_variable(const char *name, VALUE (*getter)(), VALUE (*setter)())
 
 --- VALUE rb_f_autoload(VALUE obj, VALUE klass, VALUE file)
+category Load
 
 --- VALUE rb_f_global_variables(void)
+category Variable/Constant
 
 --- VALUE rb_f_trace_var(int argc, VALUE *argv)
 
@@ -160,8 +120,10 @@ klass のクラス変数 name に val を代入します。
 --- void rb_free_generic_ivar(VALUE obj)
 
 --- void rb_gc_mark_global_tbl(void)
+category GC
 
 --- st_table *rb_generic_ivar_table(VALUE obj)
+category Variable/Constant
 
 --- struct global_entry *rb_global_entry(ID id)
 
@@ -218,10 +180,12 @@ val を代入します。
 val を代入します。
 
 --- void rb_mark_generic_ivar(VALUE obj)
+category GC
 
 --- void rb_mark_generic_ivar_tbl(void)
 
 --- VALUE rb_mod_class_variables(VALUE obj)
+category Variable/Constant
 
 --- void *rb_mod_const_at(VALUE mod, void *data)
 
@@ -230,25 +194,84 @@ val を代入します。
 --- VALUE rb_mod_constants(VALUE mod)
 
 --- VALUE rb_mod_name(VALUE mod)
+category Class/Module
 
 [[m:Module#name]] の実体です。
 無名クラス、無名モジュールに対しては空文字列を返します。
 
 --- VALUE rb_mod_remove_const(VALUE mod, VALUE name)
+category Variable/Constant
 
 --- VALUE rb_mod_remove_cvar(VALUE mod, VALUE name)
 
 --- void rb_name_class(VALUE klass, ID id)
+category Class/Module
 
 クラス klass を id と命名します。
 
 --- VALUE rb_obj_instance_variables(VALUE obj)
+category Variable/Constant
 
 --- VALUE rb_obj_remove_instance_variable(VALUE obj, VALUE name)
 
 --- VALUE rb_path2class(const char *path)
+category Class/Module
 
 --- void rb_set_class_path(VALUE klass, VALUE under, const char *name)
+
+#@if(visibility > "0")
+
+--- void Init_var_tables(void)
+category
+
+#@end
+
+#@if(visibility > "1")
+
+--- static int autoload_i(ID key, const char *name, st_table *tbl)
+category
+
+--- static VALUE classname(VALUE klass)
+
+--- static int cv_i(ID key, VALUE value, VALUE ary)
+
+--- static void cvar_override_check(VALUE id, VALUE a)
+
+--- static int fc_i(ID key, VALUE value, struct fc_result *res)
+
+--- static VALUE fc_path(struct fc_result *fc, ID name)
+
+--- static VALUE find_class_path(VALUE klass)
+
+クラス klass のクラスパスを探索し、Ruby の文字列で返します。
+
+--- static VALUE generic_ivar_defined(VALUE obj, ID id)
+
+--- static VALUE generic_ivar_get(VALUE obj, ID id)
+
+--- static int generic_ivar_remove(VALUE obj, ID id, VALUE *valp)
+
+--- static void generic_ivar_set(VALUE obj, ID id, VALUE val)
+
+--- static int givar_i(VALUE obj, st_table *tbl)
+
+--- static int givar_mark_i(ID key, VALUE value)
+
+--- static ID global_id(const char *name)
+
+--- static int gvar_i(ID key, struct global_entry *entry, VALUE ary)
+
+--- static int ivar_i(ID key, struct global_entry *entry, VALUE ary)
+
+--- static int list_i(ID key, ID value, VALUE ary)
+
+--- static int mark_global_entry(ID key, struct global_entry *entry)
+
+--- static void mod_av_set(VALUE klass, ID id, VALUE val, int isconst)
+
+--- static VALUE original_module(VALUE c)
+
+--- static void rb_autoload_id(ID id, const char *filename)
 
 --- static void rb_trace_eval(VALUE cmd, VALUE val)
 
@@ -286,3 +309,4 @@ val を代入します。
 
 --- static void var_setter(VALUE val, ID id, VALUE *var)
 
+#@end
