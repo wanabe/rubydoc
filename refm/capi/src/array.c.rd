@@ -1,5 +1,24 @@
---- VALUE rb_ary_new()
+#@# intern.h
+
+--- VALUE rb_assoc_new(VALUE a, VALUE b)
 category Array
+
+[a,b] を返します。
+
+対応するRubyコード
+
+  [a, b]
+
+使用例
+
+  VALUE assoc_string(VALUE str_a, VALUE str_b)
+  {
+    Check_Type(str_a, T_STRING);
+    Check_Type(str_b, T_STRING);
+    return rb_assoc_new(str_a, str_b);
+  }
+
+--- VALUE rb_ary_new()
 
 空の Ruby の配列を作成し返します。
 
@@ -45,45 +64,6 @@ Ruby の配列を作成し返します。
   int i[3] = { 1, 2, 3 };
   ary = rb_ary_new3(3, INT2FIX(i[0]), INT2FIX(i[1]), INT2FIX(i[2]));
 
---- VALUE rb_assoc_new(VALUE a, VALUE b)
-
-[a,b] を返します。
-
-対応するRubyコード
-
-  [a, b]
-
-使用例
-
-  VALUE assoc_string(VALUE str_a, VALUE str_b)
-  {
-    Check_Type(str_a, T_STRING);
-    Check_Type(str_b, T_STRING);
-    return rb_assoc_new(str_a, str_b);
-  }
-
---- VALUE rb_ary_entry(VALUE ary, long offset)
-
-ary のインデックス offset の要素を返します。
-
-インデックスが範囲を越えるときは Qnil を返します。
-負のインデックスも使えます。
-
-対応するRubyコード
-
-  ary[offset] または
-  ary.at(offset)
-
-使用例
-
-  VALUE num;
-  num = rb_ary_entry(ary, offset); 
-  printf("%d\n", FIX2INT(num));
-
-  キャストを使った要素の参照方法
-  
-  VALUE num = RARRAY(ary)->ptr[offset];
-
 --- VALUE rb_ary_aref(int argc, VALUE *argv, VALUE ary)
 
 argc が 1 のときは ary[*argv]、
@@ -106,6 +86,18 @@ Ruby レベルと同じく自動的にサイズが拡張されます。
   int n[5] = { 1, 2, 3, 4, 5 };
   ary = rb_ary_new();
   for (idx=0; idx<5; idx++) rb_ary_store(ary, idx, INT2FIX(n[idx])); 
+
+--- VALUE rb_ary_to_s(VALUE ary)
+
+ary.to_s
+
+使用例
+
+  void debug_print(VALUE ary)
+  {
+    Check_Type(ary, T_ARRAY);
+    printf("%s", STR2CSTR(rb_ary_to_s(ary)));
+  }
 
 --- VALUE rb_ary_push(VALUE ary, VALUE item)
 
@@ -152,25 +144,31 @@ Ruby レベルと同じく自動的にサイズが拡張されます。
 
 配列 ary の先頭に item を挿入します。
 
---- VALUE rb_ary_to_s(VALUE ary)
+--- VALUE rb_ary_entry(VALUE ary, long offset)
 
-ary.to_s
+ary のインデックス offset の要素を返します。
+
+インデックスが範囲を越えるときは Qnil を返します。
+負のインデックスも使えます。
+
+対応するRubyコード
+
+  ary[offset] または
+  ary.at(offset)
 
 使用例
 
-  void debug_print(VALUE ary)
-  {
-    Check_Type(ary, T_ARRAY);
-    printf("%s", STR2CSTR(rb_ary_to_s(ary)));
-  }
+  VALUE num;
+  num = rb_ary_entry(ary, offset); 
+  printf("%d\n", FIX2INT(num));
+
+  キャストを使った要素の参照方法
+  
+  VALUE num = RARRAY(ary)->ptr[offset];
 
 --- VALUE rb_ary_sort(VALUE ary)
 
 ary.sort
-
---- VALUE rb_ary_includes(ary, item)
-
-ary.include? item
 
 --- VALUE rb_ary_delete(VALUE ary, VALUE item)
 
@@ -183,3 +181,7 @@ ary.clear
 --- VALUE rb_ary_concat(VALUE ary, VALUE x)
 
 ary.concat x
+
+--- VALUE rb_ary_includes(ary, item)
+
+ary.include? item
