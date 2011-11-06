@@ -1,28 +1,340 @@
---- void rb_add_method(VALUE klass, ID mid, NODE *node, int noex)
+#@# intern.h
+
+--- void rb_frozen_class_p(VALUE klass)
+category Class/Module
+
+--- void rb_undef(VALUE klass, ID id)
 category Method
 
-クラス klass に mid という名前のメソッドを定義する。
-その本体は node であり、noex で示される可視性を持つ。
+クラス klass のメソッド id を undef します。
+
+--- void rb_exc_raise(VALUE err)
+category Exception/Jump
+
+例外オブジェクト err を投げます。
+
+--- void rb_exc_fatal(VALUE err)
+
+例外オブジェクト err を fatal として投げます。
+
+--- void rb_remove_method(VALUE klass, const char *name)
+category Class/Module
+
+クラス klass 自体に登録されている name という名前のメソッドを
+検索し、エントリを削除します。
+見付からなかったときは例外 NameError を発生します。
+
+--- void rb_disable_super(VALUE klass, const char *name)
+category Method
+
+クラス klass のメソッド name からの super を禁止します。
+klass とそのスーパークラスで name というメソッドが定義
+されていないときは例外 NameError を発生します。
+
+--- void rb_enable_super(VALUE klass, const char *name)
+
+クラス klass のメソッド name からの super を許可します。
+klass とそのスーパークラスで name というメソッドが定義
+されていないときは例外 NameError を発生します。
+
+--- void rb_clear_cache(void)
+
+メソッドキャッシュをすべて消去します。
 
 --- void rb_alias(VALUE klass, ID name, ID def)
 
 クラス klass に定義されたメソッド name の
 本体を実体とする新しいメソッド def を定義します。
 
+--- void rb_attr(VALUE klass, ID id, int read, int write, int ex)
+
+--- int rb_method_boundp(VALUE klass, ID id, int ex)
+
+--- VALUE rb_eval_cmd(VALUE cmd, VALUE arg, int tcheck)
+category Compile/Eval
+
+--- int rb_respond_to(VALUE obj, ID id)
+category Method
+
+obj にメソッド id が定義されているとき真。
+プライベートメソッドに対しても真を返します。
+
+--- void rb_interrupt(void)
+category Exception/Jump
+
 --- VALUE rb_apply(VALUE recv, ID mid, VALUE args)
+category Method
 
 オブジェクト recv のメソッド mid を
 引数 args とともに呼び出します。
 
---- void rb_attr(VALUE klass, ID id, int read, int write, int ex)
-
 --- void rb_backtrace(void)
 category Exception/Jump
 
---- int rb_block_given_p(void)
+--- VALUE rb_obj_instance_eval(int argc, VALUE *argv, VALUE self)
+category Compile/Eval
+
+--- VALUE rb_mod_module_eval(int argc, VALUE *argv, VALUE mod)
+category Compile/Eval
+
+Module#module_eval の実体です。
+
+--- void rb_load(VALUE fname, int wrap)
+category Load
+
+参考: [[ruby-list:21651]]
+
+((<load|組込み関数>))の低レベルインタフェースです。Rubyスクリプ
+トが格納されたファイルfname をロードします。
+
+引数wrapが、non-zeroなら無名のモジュールを生成して、ロー
+ドした内容をそのモジュールに閉じ込めます。閉じ込めるのは
+
+  * 定数
+  * クラス、モジュール
+  * トップレベルメソッド
+
+です。グローバル変数の変更などは閉じ込められません。
+
+--- void rb_load_protect(VALUE fname, int wrap, int *state)
+
+--- void rb_jump_tag(int tag)
+category Exception/Jump
+
+初出: [[ruby-dev:4064]]
+
+[[f:rb_load_protect]],[[f:rb_eval_string_protect]],[[f:rb_protect]]
+などで捕捉した大域脱出を再生成します。
+
+tagには上記関数の引数で受け取ったstateを指定します。
+
+--- int rb_provided(const char *feature)
+category Load
+
+--- void rb_provide(const char *feature)
+
+ライブラリ feature をロードしたものとしてロックをかけます。
+
+--- VALUE rb_f_require(VALUE obj, VALUE fname)
+category Load
+
+require の実体。
+self == obj として fname を require します。
+
+--- void rb_obj_call_init(VALUE obj, int argc, VALUE *argv)
+category Object
+
+オブジェクト obj に対して initialize を呼び出します。
+引数は長さ argc の配列 argv で表され、
+ブロックが積んである場合はそれも自動的に渡されます。
+
+--- VALUE rb_f_lambda(void)
 category Proc/Block
 
-メソッドがブロック付きで呼ばれていれば Qtrue を返します。
+ruby_block 先端の BLOCK から Proc オブジェクトを作成し、返します。
+
+--- VALUE rb_proc_new(func, val)
+
+VALUE (*func)(ANYARGS);
+VALUE val;
+
+--- VALUE rb_protect(VALUE (*proc)(), VALUE data, int *state)
+category Exception/Jump
+
+初出: [[ruby-dev:4064]]
+
+proc(data) を評価中のあらゆる大域脱出(例外を含む)を捕捉します。
+
+  val = rb_protect(func, arg, &status);
+  if (status != 0) {
+      puts("大域脱出が起きた");
+      rb_jump_tag(status);
+  }
+
+--- void rb_set_end_proc(void (*func)(VALUE), VALUE data)
+category Init/Finalize
+
+--- void rb_mark_end_proc(void)
+category GC
+
+--- void rb_exec_end_proc(void)
+
+END ブロックおよび Kernel#at_exit で登録した Proc オブジェクトを
+実行します。
+
+--- void ruby_finalize(void)
+
+評価器プロセスの終了処理を行います。
+
+--- void ruby_stop(int ex)
+
+評価器プロセスを停止します。
+
+--- void rb_gc_mark_threads(void)
+category GC
+
+存在するスレッド全てをマークします。
+
+--- void rb_thread_schedule(void)
+category Thread
+
+他のスレッドに実行権を渡します。
+対象の特定はできません。
+
+see also: [[f:rb_thread_wait_fd]], [[f:rb_thread_wait_for]]
+
+--- void rb_thread_wait_fd(int fd)
+
+ファイルディスクリプタ fd を読み込めるようになるまで
+カレントスレッドを停止します。
+
+--- int rb_thread_fd_writable(int fd)
+
+--- void rb_thread_fd_close(int fd)
+
+--- int rb_thread_alone(void)
+category Thread
+
+評価器にスレッドが一つしか存在しないとき真。
+
+--- void rb_thread_polling(void)
+
+--- void rb_thread_sleep(int sec)
+
+--- void rb_thread_sleep_forever(void)
+
+--- VALUE rb_thread_stop(void)
+
+現在実行中のスレッドを停止します。
+他のスレッドから rb_thread_wakeup を呼ばれると再開します。
+
+--- VALUE rb_thread_wakeup(VALUE thread)
+
+停止中のスレッド thread を再開させます。
+
+--- VALUE rb_thread_run(VALUE thread)
+
+スレッド thread に実行権を渡します。
+
+--- VALUE rb_thread_create(fn, arg)
+
+VALUE (*fn)();
+void *arg;
+
+--- int rb_thread_select(int max, fd_set *read, fd_set *write, fd_set *except, struct timeval *timeout)
+
+Ruby のスレッドは実装のために内部で select(2) を使っているため、
+拡張ライブラリ内で独自に select(2) を使った場合の動作は保証されません。
+代わりにこの関数 rb_thread_select を使ってください。
+引数の意味は select(2) と同じです。
+
+--- void rb_thread_wait_for(struct timeval time)
+
+time の長さの時間が経過するまでカレントスレッドを停止します。
+
+--- VALUE rb_thread_current(void)
+
+現在実行中のスレッドを返します。
+
+--- VALUE rb_thread_main(void)
+
+メインスレッド (プロセスの一番最初に存在するスレッド) を返します。
+
+--- VALUE rb_thread_local_aref(VALUE thread, ID id)
+
+--- VALUE rb_thread_local_aset(VALUE thread, ID id, VALUE val)
+
+--- void rb_thread_atfork(void)
+
+
+
+#@# ruby.h
+
+--- void rb_check_safe_str(VALUE x)
+category String
+
+マクロ Check_SafeStr の本体です。
+
+この API は obsolete です。
+SafeStringValue() を使ってください。
+
+--- void rb_secure(int level)
+category Security
+
+現在のセーフレベルが level 以上のとき、
+例外 SecurityError を発生します。
+
+--- void rb_set_safe_level(int level)
+category Security
+
+セーフレベルを level に上げます。
+level が現在のセーフレベルより低い場合は
+例外 SecurityError が発生します。
+
+--- void rb_extend_object(VALUE obj, VALUE module)
+category Class/Module
+
+--- void rb_iter_break(void)
+category Exception/Jump
+
+break の C 用インターフェイスです。
+現在評価中のブロックから抜けます。
+
+代表的には、rb_iterate の block_proc 中で使います。
+
+--- void rb_exit(int status)
+category Init/Finalize
+
+ステータス status でインタプリタを終了させます。
+
+--- VALUE rb_eval_string(const char *str)
+category Compile/Eval
+
+str を Ruby プログラムとしてコンパイル・評価し、
+その値を返します。
+
+--- VALUE rb_eval_string_protect(const char *str, int *state)
+
+str を Ruby プログラムとしてコンパイル・評価し、
+その値を返します。
+
+コンパイル中または評価中に例外を含む大域脱出が発生した場合は、
+state が NULL でなければそれに値が代入され Qnil を返します。
+
+--- VALUE rb_eval_string_wrap(const char *str, int *state)
+
+[[f:rb_eval_string_protect]] と同じですが，スクリプトの評価を
+無名のモジュールのもとで行います。
+
+--- VALUE rb_funcall(VALUE recv, ID name, int nargs, ...)
+category Method
+
+recv に対してメソッド name を呼びだし、
+メソッドの返り値を返します。プライベートメソッドも
+呼びだせます。
+
+メソッドへの引数は第四引数以降にあたえ、その数を nargs
+に指定します。それら引数はすべて VALUE でなければ
+いけません。
+
+--- VALUE rb_funcall2(VALUE recv, ID name, int nargs, VALUE *args)
+
+recv に対してメソッド name を呼びだし、
+メソッドの返り値を返します。プライベートメソッドも
+呼びだせます。
+
+メソッドへの引数は VALUE の配列として第四引数にあたえ、
+その長さを nargs に指定します。
+
+--- VALUE rb_funcall3(VALUE recv, ID mid, int argc, const VALUE *argv)
+
+recv に対してメソッド name を呼びだし、
+メソッドの返り値を返します。
+
+メソッドへの引数は VALUE の配列として第四引数にあたえ、
+その長さを nargs に指定します。
+
+rb_funcall2 との違いは、プライベートメソッドを呼び出せないことです。
 
 --- VALUE rb_call_super(int argc, const VALUE *argv)
 category Method
@@ -30,8 +342,51 @@ category Method
 Rubyレベルでの super です。
 現在評価中のメソッドのスーパークラスのメソッドを呼び出します。
 
---- VALUE rb_catch(const char *tag, VALUE (*proc)(), VALUE data)
+--- VALUE rb_yield(VALUE val)
+category Proc/Block
+
+yield の C 版です．val を引数にブロックを実行します．
+複数の引数を与えたいときは配列に格納して渡します。
+
+この関数を呼び出したメソッドがブロックを伴わない場合は，例外
+[[c:LocalJumpError]] が発生します．
+
+--- int rb_block_given_p(void)
+
+メソッドがブロック付きで呼ばれていれば Qtrue を返します。
+
+--- VALUE rb_iterate(VALUE (*call_proc)(), VALUE date1, VALUE (*block_proc)(), date2)
+
+ブロック付きメソッド(イテレータ)呼び出しを行う関数です．
+
+まず call_proc(data1) を実行します。そしてその関数か
+その直下のメソッドで yield が発生すると以下が実行されます。
+
+    block_proc(VALUE block_arg, VALUE data2, VALUE self)
+
+block_arg はブロック引数(複数なら配列に入っている)、
+data2 は rb_iterate() に渡したもの、
+self は block_proc 呼び出し時点での self です。
+
+--- VALUE rb_rescue(VALUE (*b_proc)(), VALUE data1, VALUE (*r_proc)(), VALUE data2)
 category Exception/Jump
+
+まず b_proc(data1) を実行し、その途中で例外が発生したら r_proc(data2) を実行します。
+捕捉する例外は [[c:StandardError]] のサブクラスだけです。
+
+--- VALUE rb_rescue2(VALUE (*b_proc)(), VALUE data1, VALUE (*r_proc)(), VALUE data2, ...)
+
+まず b_proc(data1) を実行し、その途中で例外が発生したら r_proc(data2) を実行します。
+第五引数以降の可変長引数に捕捉したい例外クラスのリストを指定します。
+引数の最後は NULL で終らなければなりません。
+
+--- VALUE rb_ensure(VALUE (*body)(), VALUE data1, VALUE (*ensure)(), VALUE data2)
+
+ensure の C 版です。まず body(data1) を実行し、その途中で
+例外や exit が起きたとしても ensure(data2) が確実に
+実行されます ( body() が正常終了しても実行されます)。
+
+--- VALUE rb_catch(const char *tag, VALUE (*proc)(), VALUE data)
 
 catch と同等の動作を実行します。
 
@@ -67,25 +422,86 @@ throw が発生しなかったときは proc の返り値を返します。
       rb_define_method(Foo, "abort", foo_abort, 0);
   }
 
---- void rb_check_safe_str(VALUE x)
-category String
+--- void rb_throw(const char *tag, VALUE val)
+category Exception/Jump
 
-マクロ Check_SafeStr の本体です。
+throw の実体。返り値を val として、
+tag を catch したところまでジャンプします。
 
-この API は obsolete です。
-SafeStringValue() を使ってください。
+rb_catch も参照してください。
 
---- void rb_clear_cache(void)
+--- VALUE rb_require(const char *fname)
+category Load
+
+require の C 版です。feature「fname」をロードします。
+
+--- void ruby_init(void)
+category Init/Finalize
+
+評価器を初期化します。Ruby C API を呼ぶプロセスでは
+前もって必ずこの関数を呼ばなければなりません。
+
+--- void ruby_options(int argc, char **argv)
+
+argc と argv を ruby への
+コマンドラインオプションとして処理します。
+
+#@until 1.9.0
+
+--- ID rb_frame_last_func(void)
 category Method
 
-メソッドキャッシュをすべて消去します。
+現在呼び出し中の (Rubyで実装された) メソッドの呼び出し名を返します。
 
---- void rb_disable_super(VALUE klass, const char *name)
-category Method
+--- VALUE *rb_svar(int cnt)
+category Variable/Constant
 
-クラス klass のメソッド name からの super を禁止します。
-klass とそのスーパークラスで name というメソッドが定義
-されていないときは例外 NameError を発生します。
+現在の SCOPE でローカル変数IDが cnt である変数の
+領域へのポインタを返します。主に [[m:$_]] (cnt=0) と [[m:$~]] (cnt=1) に
+アクセスするために使われます。
+
+--- void rb_thread_interrupt(void)
+category Thread
+
+--- void rb_thread_signal_raise(char *sig)
+
+--- void rb_thread_start_timer(void)
+
+setitimer(2) が存在する場合のみ定義されます。
+
+Ruby のスレッドスケジューリングに使用している
+インターバルタイマーを開始します。
+
+--- void rb_thread_stop_timer(void)
+
+setitimer(2) が存在する場合のみ定義されます。
+
+Ruby のスレッドスケジューリングに使用しているインターバルタイマーを
+停止します。このタイマーが止まると Ruby のスレッド機構は基本的に停止
+しますので注意してください。
+
+--- void rb_thread_trap_eval(VALUE cmd, int sig)
+
+--- VALUE rb_with_disable_interrupt(VALUE (*proc)(), data)
+category Exception/Jump
+
+#@end
+
+#@if(visibility > "0")
+
+--- void Init_eval(void)
+category
+
+--- void Init_load(void)
+
+--- void Init_Proc(void)
+
+--- void Init_Thread(void)
+
+--- void rb_add_method(VALUE klass, ID mid, NODE *node, int noex)
+
+クラス klass に mid という名前のメソッドを定義する。
+その本体は node であり、noex で示される可視性を持つ。
 
 --- VALUE rb_dvar_curr(ID id)
 category Variable/Constant
@@ -100,427 +516,16 @@ category Variable/Constant
 
 現在のローカル変数スコープで id を参照します。
 
---- void rb_enable_super(VALUE klass, const char *name)
-category Method
-
-クラス klass のメソッド name からの super を許可します。
-klass とそのスーパークラスで name というメソッドが定義
-されていないときは例外 NameError を発生します。
-
---- VALUE rb_ensure(VALUE (*body)(), VALUE data1, VALUE (*ensure)(), VALUE data2)
-category Exception/Jump
-
-ensure の C 版です。まず body(data1) を実行し、その途中で
-例外や exit が起きたとしても ensure(data2) が確実に
-実行されます ( body() が正常終了しても実行されます)。
-
---- VALUE rb_eval_cmd(VALUE cmd, VALUE arg, int tcheck)
-category Compile/Eval
-
---- VALUE rb_eval_string(const char *str)
-
-str を Ruby プログラムとしてコンパイル・評価し、
-その値を返します。
-
---- VALUE rb_eval_string_protect(const char *str, int *state)
-
-str を Ruby プログラムとしてコンパイル・評価し、
-その値を返します。
-
-コンパイル中または評価中に例外を含む大域脱出が発生した場合は、
-state が NULL でなければそれに値が代入され Qnil を返します。
-
---- VALUE rb_eval_string_wrap(const char *str, int *state)
-
-[[f:rb_eval_string_protect]] と同じですが，スクリプトの評価を
-無名のモジュールのもとで行います。
-
---- void rb_exc_fatal(VALUE err)
-category Exception/Jump
-
-例外オブジェクト err を fatal として投げます。
-
---- void rb_exc_raise(VALUE err)
-category Exception/Jump
-
-例外オブジェクト err を投げます。
-
---- void rb_exec_end_proc(void)
-category Init/Finalize
-
-END ブロックおよび Kernel#at_exit で登録した Proc オブジェクトを
-実行します。
-
---- void rb_exit(int status)
-
-ステータス status でインタプリタを終了させます。
-
---- void rb_extend_object(VALUE obj, VALUE module)
-category Class/Module
-
---- VALUE rb_f_lambda(void)
-category Proc/Block
-
-ruby_block 先端の BLOCK から Proc オブジェクトを作成し、返します。
-
---- VALUE rb_f_require(VALUE obj, VALUE fname)
-category Load
-
-require の実体。
-self == obj として fname を require します。
-
---- ID rb_frame_last_func(void)
-category Method
-
-現在呼び出し中の (Rubyで実装された) メソッドの呼び出し名を返します。
-
---- void rb_frozen_class_p(VALUE klass)
-category Class/Module
-
---- VALUE rb_funcall(VALUE recv, ID name, int nargs, ...)
-category Method
-
-recv に対してメソッド name を呼びだし、
-メソッドの返り値を返します。プライベートメソッドも
-呼びだせます。
-
-メソッドへの引数は第四引数以降にあたえ、その数を nargs
-に指定します。それら引数はすべて VALUE でなければ
-いけません。
-
---- VALUE rb_funcall2(VALUE recv, ID name, int nargs, VALUE *args)
-
-recv に対してメソッド name を呼びだし、
-メソッドの返り値を返します。プライベートメソッドも
-呼びだせます。
-
-メソッドへの引数は VALUE の配列として第四引数にあたえ、
-その長さを nargs に指定します。
-
---- VALUE rb_funcall3(VALUE recv, ID mid, int argc, const VALUE *argv)
-
-recv に対してメソッド name を呼びだし、
-メソッドの返り値を返します。
-
-メソッドへの引数は VALUE の配列として第四引数にあたえ、
-その長さを nargs に指定します。
-
-rb_funcall2 との違いは、プライベートメソッドを呼び出せないことです。
-
---- void rb_gc_mark_threads(void)
-category GC
-
-存在するスレッド全てをマークします。
-
---- void rb_interrupt(void)
-category Exception/Jump
-
---- void rb_iter_break(void)
-category Exception/Jump
-
-break の C 用インターフェイスです。
-現在評価中のブロックから抜けます。
-
-代表的には、rb_iterate の block_proc 中で使います。
-
---- VALUE rb_iterate(VALUE (*call_proc)(), VALUE date1, VALUE (*block_proc)(), date2)
-category Proc/Block
-
-ブロック付きメソッド(イテレータ)呼び出しを行う関数です．
-
-まず call_proc(data1) を実行します。そしてその関数か
-その直下のメソッドで yield が発生すると以下が実行されます。
-
-    block_proc(VALUE block_arg, VALUE data2, VALUE self)
-
-block_arg はブロック引数(複数なら配列に入っている)、
-data2 は rb_iterate() に渡したもの、
-self は block_proc 呼び出し時点での self です。
-
 --- int rb_iterator_p()
 
 この関数はobsoleteです。[[f:rb_block_given_p]] を使用してください。
 
---- void rb_jump_tag(int tag)
-category Exception/Jump
-
-初出: [[ruby-dev:4064]]
-
-[[f:rb_load_protect]],[[f:rb_eval_string_protect]],[[f:rb_protect]]
-などで捕捉した大域脱出を再生成します。
-
-tagには上記関数の引数で受け取ったstateを指定します。
-
---- void rb_load(VALUE fname, int wrap)
-category Load
-
-参考: [[ruby-list:21651]]
-
-((<load|組込み関数>))の低レベルインタフェースです。Rubyスクリプ
-トが格納されたファイルfname をロードします。
-
-引数wrapが、non-zeroなら無名のモジュールを生成して、ロー
-ドした内容をそのモジュールに閉じ込めます。閉じ込めるのは
-
-  * 定数
-  * クラス、モジュール
-  * トップレベルメソッド
-
-です。グローバル変数の変更などは閉じ込められません。
-
---- void rb_load_protect(VALUE fname, int wrap, int *state)
-
---- void rb_mark_end_proc(void)
-category GC
-
---- int rb_method_boundp(VALUE klass, ID id, int ex)
-category Method
-
---- VALUE rb_mod_module_eval(int argc, VALUE *argv, VALUE mod)
-category Compile/Eval
-
-Module#module_eval の実体です。
-
---- void rb_obj_call_init(VALUE obj, int argc, VALUE *argv)
-category Object
-
-オブジェクト obj に対して initialize を呼び出します。
-引数は長さ argc の配列 argv で表され、
-ブロックが積んである場合はそれも自動的に渡されます。
-
---- VALUE rb_obj_instance_eval(int argc, VALUE *argv, VALUE self)
-category Compile/Eval
-
---- VALUE rb_proc_new(func, val)
-category Proc/Block
-
-VALUE (*func)(ANYARGS);
-VALUE val;
-
---- VALUE rb_protect(VALUE (*proc)(), VALUE data, int *state)
-category Exception/Jump
-
-初出: [[ruby-dev:4064]]
-
-proc(data) を評価中のあらゆる大域脱出(例外を含む)を捕捉します。
-
-  val = rb_protect(func, arg, &status);
-  if (status != 0) {
-      puts("大域脱出が起きた");
-      rb_jump_tag(status);
-  }
-
---- void rb_provide(const char *feature)
-category Load
-
-ライブラリ feature をロードしたものとしてロックをかけます。
-
---- int rb_provided(const char *feature)
-
---- void rb_remove_method(VALUE klass, const char *name)
-category Class/Module
-
-クラス klass 自体に登録されている name という名前のメソッドを
-検索し、エントリを削除します。
-見付からなかったときは例外 NameError を発生します。
-
---- VALUE rb_require(const char *fname)
-category Load
-
-require の C 版です。feature「fname」をロードします。
-
---- VALUE rb_rescue(VALUE (*b_proc)(), VALUE data1, VALUE (*r_proc)(), VALUE data2)
-category Exception/Jump
-
-まず b_proc(data1) を実行し、その途中で例外が発生したら r_proc(data2) を実行します。
-捕捉する例外は [[c:StandardError]] のサブクラスだけです。
-
---- VALUE rb_rescue2(VALUE (*b_proc)(), VALUE data1, VALUE (*r_proc)(), VALUE data2, ...)
-
-まず b_proc(data1) を実行し、その途中で例外が発生したら r_proc(data2) を実行します。
-第五引数以降の可変長引数に捕捉したい例外クラスのリストを指定します。
-引数の最後は NULL で終らなければなりません。
-
---- int rb_respond_to(VALUE obj, ID id)
-category Method
-
-obj にメソッド id が定義されているとき真。
-プライベートメソッドに対しても真を返します。
-
---- void rb_secure(int level)
-category Security
-
-現在のセーフレベルが level 以上のとき、
-例外 SecurityError を発生します。
-
---- void rb_set_end_proc(void (*func)(VALUE), VALUE data)
-category Init/Finalize
-
---- void rb_set_safe_level(int level)
-category Security
-
-セーフレベルを level に上げます。
-level が現在のセーフレベルより低い場合は
-例外 SecurityError が発生します。
-
---- VALUE *rb_svar(int cnt)
-category Variable/Constant
-
-現在の SCOPE でローカル変数IDが cnt である変数の
-領域へのポインタを返します。主に [[m:$_]] (cnt=0) と [[m:$~]] (cnt=1) に
-アクセスするために使われます。
-
---- int rb_thread_alone(void)
-category Thread
-
-評価器にスレッドが一つしか存在しないとき真。
-
---- void rb_thread_atfork(void)
-
---- VALUE rb_thread_create(fn, arg)
-
-VALUE (*fn)();
-void *arg;
-
---- VALUE rb_thread_current(void)
-
-現在実行中のスレッドを返します。
-
---- void rb_thread_fd_close(int fd)
-
---- int rb_thread_fd_writable(int fd)
-
---- void rb_thread_interrupt(void)
-
 --- VALUE rb_thread_list(void)
 
---- VALUE rb_thread_local_aref(VALUE thread, ID id)
-
---- VALUE rb_thread_local_aset(VALUE thread, ID id, VALUE val)
-
---- VALUE rb_thread_main(void)
-
-メインスレッド (プロセスの一番最初に存在するスレッド) を返します。
-
---- void rb_thread_polling(void)
-
---- VALUE rb_thread_run(VALUE thread)
-
-スレッド thread に実行権を渡します。
-
---- void rb_thread_schedule(void)
-
-他のスレッドに実行権を渡します。
-対象の特定はできません。
-
-see also: [[f:rb_thread_wait_fd]], [[f:rb_thread_wait_for]]
-
---- int rb_thread_select(int max, fd_set *read, fd_set *write, fd_set *except, struct timeval *timeout)
-
-Ruby のスレッドは実装のために内部で select(2) を使っているため、
-拡張ライブラリ内で独自に select(2) を使った場合の動作は保証されません。
-代わりにこの関数 rb_thread_select を使ってください。
-引数の意味は select(2) と同じです。
-
---- void rb_thread_signal_raise(char *sig)
-
---- void rb_thread_sleep(int sec)
-
---- void rb_thread_sleep_forever(void)
-
---- void rb_thread_start_timer(void)
-
-setitimer(2) が存在する場合のみ定義されます。
-
-Ruby のスレッドスケジューリングに使用している
-インターバルタイマーを開始します。
-
---- VALUE rb_thread_stop(void)
-
-現在実行中のスレッドを停止します。
-他のスレッドから rb_thread_wakeup を呼ばれると再開します。
-
---- void rb_thread_stop_timer(void)
-
-setitimer(2) が存在する場合のみ定義されます。
-
-Ruby のスレッドスケジューリングに使用しているインターバルタイマーを
-停止します。このタイマーが止まると Ruby のスレッド機構は基本的に停止
-しますので注意してください。
-
---- void rb_thread_trap_eval(VALUE cmd, int sig)
-
---- void rb_thread_wait_fd(int fd)
-
-ファイルディスクリプタ fd を読み込めるようになるまで
-カレントスレッドを停止します。
-
---- void rb_thread_wait_for(struct timeval time)
-
-time の長さの時間が経過するまでカレントスレッドを停止します。
-
---- VALUE rb_thread_wakeup(VALUE thread)
-
-停止中のスレッド thread を再開させます。
-
---- void rb_throw(const char *tag, VALUE val)
-category Exception/Jump
-
-throw の実体。返り値を val として、
-tag を catch したところまでジャンプします。
-
-rb_catch も参照してください。
-
---- void rb_undef(VALUE klass, ID id)
-category Method
-
-クラス klass のメソッド id を undef します。
-
---- VALUE rb_with_disable_interrupt(VALUE (*proc)(), data)
-category Exception/Jump
-
---- VALUE rb_yield(VALUE val)
-category Proc/Block
-
-yield の C 版です．val を引数にブロックを実行します．
-複数の引数を与えたいときは配列に格納して渡します。
-
-この関数を呼び出したメソッドがブロックを伴わない場合は，例外
-[[c:LocalJumpError]] が発生します．
-
---- void ruby_finalize(void)
+--- void ruby_run(void)
 category Init/Finalize
 
-評価器プロセスの終了処理を行います。
-
---- void ruby_init(void)
-
-評価器を初期化します。Ruby C API を呼ぶプロセスでは
-前もって必ずこの関数を呼ばなければなりません。
-
---- void ruby_options(int argc, char **argv)
-
-argc と argv を ruby への
-コマンドラインオプションとして処理します。
-
---- void ruby_run(void)
-
 ruby_eval_tree の評価を開始します。
-
---- void ruby_stop(int ex)
-
-評価器プロセスを停止します。
-
-#@if(visibility > "0")
-
---- void Init_eval(void)
-category
-
---- void Init_load(void)
-
---- void Init_Proc(void)
-
---- void Init_Thread(void)
 
 #@end
 
