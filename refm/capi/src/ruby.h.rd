@@ -1,60 +1,211 @@
---- MACRO type* ALLOC(type)
-category Memory
+#@# ruby.h
 
-type 型のメモリを割り当てる。
-
---- MACRO type* ALLOC_N(type, n)
-
-type 型のメモリを n 個割り当てる。
-
---- MACRO type* ALLOCA_N(type, n)
-
-type 型のメモリを n 個スタックフレームに割り当てる。
-このメモリは関数が終わると自動的に解放される。
-
---- MACRO int BUILTIN_TYPE(VALUE obj)
-category Type/Class
-
-obj の構造体型 ID を返します。
-[[f:SPECIAL_CONST_P(obj)]] が真のオブジェクトに対して使うと落ちます。
-
---- void Check_SafeStr(VALUE v)
-category String
-
-古い API です。[[f:SafeStringValue]] を使ってください。
-
---- void Check_Type(VALUE val, int typeflag)
-category Type/Class
-
-val の構造体型フラグが typeflag でなければ
-例外 TypeError を発生します。val は即値の VALUE であっても
-構いません。
-
---- MACRO VALUE CHR2FIX(char x)
+--- MACRO long FIXNUM_MAX
 category Numeric
 
-char 型の整数 x を Ruby の Fixnum に変換します。
+Fixnum にできる整数の上限値。
+
+--- MACRO long FIXNUM_MIN
+
+Fixnum にできる整数の下限値。
+
+--- MACRO long FIXNUM_MAX
+
+Fixnum にできる整数の上限値。
+
+--- MACRO long FIXNUM_MIN
+
+Fixnum にできる整数の下限値。
+
+--- MACRO VALUE LONG2FIX(long i)
+
+INT2FIX と同じです。
+
+--- VALUE rb_fix_new(long v)
+
+--- VALUE rb_int_new(long v)
+
+--- VALUE rb_uint_new(unsigned int v)
+
+--- MACRO VALUE LL2NUM(long long v)
+
+--- MACRO VALUE ULL2NUM(unsigned long long n)
+
+--- MACRO long FIX2LONG(VALUE x)
+
+Fixnum を long に変換します。
+Fixnum は常に long に収まります。
+
+--- MACRO unsigned long FIX2ULONG(VALUE x)
+
+Fixnum を unsigned long に変換します。
+Fixnum は常に unsigned long に収まります。
+
+--- MACRO int FIXNUM_P(VALUE obj)
+
+obj が Fixnum のインスタンスのとき真。
+
+--- MACRO int POSFIXABLE(long f)
+
+f が Fixnum の上限値以下ならば真。
+
+--- MACRO int NEGFIXABLE(long f)
+
+--- MACRO int FIXABLE(long f)
+
+f が Fixnum の範囲に収まっているなら真。
+
+--- MACRO int IMMEDIATE_P(VALUE obj)
+category Type/Class
+
+obj が即値でかつ真な値であるとき真。
+すなわち現在の実装では
+obj が Symbol か Fixnum のインスタンスであるか、 Qtrue のとき真。
+
+--- MACRO int SYMBOL_P(VALUE obj)
+category Symbol/Id
+
+obj が Symbol のインスタンスのとき真。
+
+--- MACRO VALUE ID2SYM(ID id)
+
+id を Symbol に変換します。
+
+--- MACRO int SYM2ID(VALUE symbol)
+
+Symbol symbol を数値に変換します。
+1.4では、[[f:FIX2INT]](symbol)と同じです。
+
+--- MACRO int RTEST(VALUE obj)
+category Type/Class
+
+obj が Qfalse でも Qnil でもないとき真。
+
+--- MACRO int NIL_P(VALUE obj)
+
+obj が Qnil のとき真。
 
 --- MACRO VALUE CLASS_OF(VALUE obj)
-category Type/Class
 
 obj のクラスを返します。
 この場合の「クラス」とは C レベルのクラス、
 つまり RBasic 構造体の klass メンバの値です。
 また、構造体を持たない Fixnum などに対しても正常に働きます。
 
---- MACRO void CLONESETUP(VALUE clone, VALUE obj)
+
+--- MACRO int BUILTIN_TYPE(VALUE obj)
+
+obj の構造体型 ID を返します。
+[[f:SPECIAL_CONST_P(obj)]] が真のオブジェクトに対して使うと落ちます。
+
+--- MACRO int TYPE(VALUE obj)
+
+obj の構造体型 ID を返します。
+
+--- void Check_Type(VALUE val, int typeflag)
+
+val の構造体型フラグが typeflag でなければ
+例外 TypeError を発生します。val は即値の VALUE であっても
+構いません。
+
+--- MACRO void StringValue(VALUE val)
+category String
+
+val が String でなければ to_str メソッドを使って String に変換します。
+
+このマクロに渡した VALUE は ruby の GC から確実に保護されます。
+
+--- MACRO char *StringValuePtr(VALUE val)
+
+val が String でなければ to_str メソッドを使って String に変換し、
+その実体のポインタを返します。
+
+このマクロに渡した VALUE は ruby の GC から確実に保護されます。
+
+--- MACRO SafeStringValue(v)
+
+[[f:StringValue]] と同じく、val が String でなければ to_str メソッドを
+使って String に変換します。同時に rb_check_safe_str() によるチェックも
+行います。
+
+--- void Check_SafeStr(VALUE v)
+
+古い API です。[[f:SafeStringValue]] を使ってください。
+
+--- int rb_safe_level(void)
+category Security
+
+現在のセーフレベルを返します。
+
+--- MACRO long NUM2LONG(VALUE x)
+category Numeric
+
+--- MACRO unsigned long NUM2ULONG(VLAUE x)
+
+--- MACRO int FIX2INT(VALUE x)
+
+Fixnum を int に変換します。
+返り値が int の範囲から外れる場合は RangeError が発生します。
+
+--- MACRO int NUM2INT(VALUE x)
+
+--- MACRO unsigned int NUM2UINT(VALUE x)
+
+--- MACRO unsigned int FIX2UINT(VALUE x)
+
+Fixnum を unsigned int に変換します。
+返り値が unsigned int の範囲から外れる場合は RangeError が発生します。
+
+--- MACRO double NUM2DBL(VALUE x)
+
+--- MACRO void NEWOBJ(obj, int typeflag)
 category Object
+
+--- MACRO void OBJSETUP(obj, VALUE klass, int typeflag)
+
+obj をクラス klass とフラグ typeflag で初期化する。
+$SAFE >= 3 のときは無条件で汚染する。
+
+--- MACRO void CLONESETUP(VALUE clone, VALUE obj)
 
 OBJSETUP() の変種。
 clone を、obj から clone で作った
 オブジェクトとして初期化します。
 
---- MACRO void Data_Get_Struct(VALUE obj, type, type *svar)
+--- MACRO void DUPSETUP(dup, obj)
+
+OBJSETUP() の変種。
+dup を、obj から dup で作った
+オブジェクトとして初期化します。
+
+--- MACRO void *DATA_PTR(VALUE dta)
 category DataClass
 
-Ruby のオブジェクト obj から type 型へのポインタを
-とりだし svar に代入します。
+実際は struct RData* 型である dta から、
+それがラップしているポインタを取り出します。
+
+#@until 1.9.0
+
+--- MACRO RUBY_DATA_FUNC(func)
+category DataClass
+
+任意の関数へのポインタ func を struct RData の dmark/dfree の
+値として適する型に強制キャストします。
+
+#@end
+
+--- MACRO VALUE Data_Wrap_Struct(VALUE klass, RUBY_DATA_FUNC mark, RUBY_DATA_FUNC free, void *sval)
+
+C の構造体 sval をラップして klass クラスの
+インスタンスである Ruby オブジェクトを生成し、それを返します。
+mark、free はそれぞれ sval のマーク用・解放用の
+関数へのポインタです。どちらも、必要ないときはかわりに 0 を渡します。
+
+また RUBY_DATA_FUNC の定義は以下のようです。
+
+    typedef void (*RUBY_DATA_FUNC)(void *st)
+
+第一引数 st には sval が渡されます。
 
 使用例
 
@@ -64,11 +215,13 @@ Ruby のオブジェクト obj から type 型へのポインタを
     };
 
     VALUE
-    my_i(VALUE self)
+    my_s_new(klass)
+        VALUE klass;
     {
-        struct mytype *m;
-        Data_Get_Struct(self, struct mytype, m);
-        return INT2NUM(m->i);
+        struct mytype *m = malloc(sizeof(struct mytype));
+        m->i = 0;
+        m->s = 0;
+        return Data_Wrap_Struct(MyClass, 0, free_my, m);
     }
 
 --- MACRO VALUE Data_Make_Struct(VALUE klass, type, RUBY_DATA_FUNC mark, RUBY_DATA_FUNC free, type *svar)
@@ -101,23 +254,10 @@ free はそれぞれマーク用・解放用の関数へのポインタです。
                                 mark_my, free_my, dummy);
     }
 
---- MACRO void *DATA_PTR(VALUE dta)
+--- MACRO void Data_Get_Struct(VALUE obj, type, type *svar)
 
-実際は struct RData* 型である dta から、
-それがラップしているポインタを取り出します。
-
---- MACRO VALUE Data_Wrap_Struct(VALUE klass, RUBY_DATA_FUNC mark, RUBY_DATA_FUNC free, void *sval)
-
-C の構造体 sval をラップして klass クラスの
-インスタンスである Ruby オブジェクトを生成し、それを返します。
-mark、free はそれぞれ sval のマーク用・解放用の
-関数へのポインタです。どちらも、必要ないときはかわりに 0 を渡します。
-
-また RUBY_DATA_FUNC の定義は以下のようです。
-
-    typedef void (*RUBY_DATA_FUNC)(void *st)
-
-第一引数 st には sval が渡されます。
+Ruby のオブジェクト obj から type 型へのポインタを
+とりだし svar に代入します。
 
 使用例
 
@@ -127,101 +267,148 @@ mark、free はそれぞれ sval のマーク用・解放用の
     };
 
     VALUE
-    my_s_new(klass)
-        VALUE klass;
+    my_i(VALUE self)
     {
-        struct mytype *m = malloc(sizeof(struct mytype));
-        m->i = 0;
-        m->s = 0;
-        return Data_Wrap_Struct(MyClass, 0, free_my, m);
+        struct mytype *m;
+        Data_Get_Struct(self, struct mytype, m);
+        return INT2NUM(m->i);
     }
 
---- MACRO void DUPSETUP(dup, obj)
-category Object
+--- MACRO struct RBasic *RBASIC(VALUE obj)
+category Type/Class
 
-OBJSETUP() の変種。
-dup を、obj から dup で作った
-オブジェクトとして初期化します。
+--- MACRO struct RObject *ROBJECT(VALUE obj)
 
---- MACRO int FIX2INT(VALUE x)
-category Numeric
+--- MACRO struct RClass *RCLASS(VALUE obj)
 
-Fixnum を int に変換します。
-返り値が int の範囲から外れる場合は RangeError が発生します。
+--- MACRO struct RClass *RMODULE(VALUE obj)
 
---- MACRO long FIX2LONG(VALUE x)
+--- MACRO struct RFloat *RFLOAT(VALUE obj)
 
-Fixnum を long に変換します。
-Fixnum は常に long に収まります。
+--- MACRO struct RString *RSTRING(VALUE obj)
 
---- MACRO unsigned int FIX2UINT(VALUE x)
+--- MACRO struct RRegexp *RREGEXP(VALUE obj)
 
-Fixnum を unsigned int に変換します。
-返り値が unsigned int の範囲から外れる場合は RangeError が発生します。
+--- MACRO struct RArray *RARRAY(VALUE obj)
 
---- MACRO unsigned long FIX2ULONG(VALUE x)
+obj を struct RArray* にキャストする。
+本当は obj が struct RArray* でないとしてもキャストしてしまう。
 
-Fixnum を unsigned long に変換します。
-Fixnum は常に unsigned long に収まります。
+--- MACRO struct RHash *RHASH(VALUE obj)
 
---- MACRO int FIXABLE(long f)
+--- MACRO struct RData *RDATA(VALUE obj)
 
-f が Fixnum の範囲に収まっているなら真。
+--- MACRO struct RStruct *RSTRUCT(VALUE obj)
 
---- MACRO long FIXNUM_MAX
+--- MACRO struct RBignum *RBIGNUM(VALUE obj)
 
-Fixnum にできる整数の上限値。
+--- MACRO struct RFile *RFILE(VALUE obj)
 
---- MACRO long FIXNUM_MIN
+--- MACRO int SPECIAL_CONST_P(VALUE obj)
 
-Fixnum にできる整数の下限値。
-
---- MACRO int FIXNUM_P(VALUE obj)
-
-obj が Fixnum のインスタンスのとき真。
+obj が実体の構造体を持たないとき真。
+現時点で真になるのは Qnil, Qtrue, Qfalse と、
+Fixnum, Symbol のインスタンス。
 
 --- MACRO int FL_ABLE(VALUE x)
 category Flag
 
 x が即値の VALUE でなければ真。
 
---- MACRO void FL_REVERSE(VALUE x, int f)
+--- MACRO int FL_TEST(VALUE x, int f)
 
-x のフラグ f を反転する。
+x のフラグ f が立っていたら真。
 
 --- MACRO void FL_SET(VALUE x, int f)
 
 x に対してフラグ f をセットする。
 
---- MACRO int FL_TEST(VALUE x, int f)
-
-x のフラグ f が立っていたら真。
-
 --- MACRO void FL_UNSET(VALUE x, int f)
 
 x のフラグ f をクリアする。
 
---- MACRO VALUE ID2SYM(ID id)
-category Symbol/Id
+--- MACRO void FL_REVERSE(VALUE x, int f)
 
-id を Symbol に変換します。
+x のフラグ f を反転する。
 
---- MACRO int IMMEDIATE_P(VALUE obj)
-category Type/Class
+--- MACRO int OBJ_TAINTED(VALUE x)
+category Security
 
-obj が即値でかつ真な値であるとき真。
-すなわち現在の実装では
-obj が Symbol か Fixnum のインスタンスであるか、 Qtrue のとき真。
+x に汚染マークが付いていたら真。
 
---- MACRO VALUE INT2FIX(int i)
-category Numeric
+--- MACRO void OBJ_TAINT(VALUE x)
 
-Fixnum におさまることが自明な整数を Fixnum に変換します。
-なお、Fixnum の幅は long の幅 - 1 です。
+x に汚染マークを付ける。
+
+--- MACRO void OBJ_INFECT(VALUE dest, VALUE src)
+
+src に汚染マークが付いていたら dest も汚染する。
+
+--- MACRO int OBJ_FROZEN(VALUE x)
+category Flag
+
+--- MACRO void OBJ_FREEZE(VALUE x)
 
 --- MACRO VALUE INT2NUM(int i)
+category Numeric
 
 任意の整数を Fixnum か Bignum に変換します。
+
+--- MACRO VALUE UINT2NUM(unsigned int i)
+
+任意の整数を Fixnum か Bignum に変換します。
+
+--- MACRO VALUE LONG2NUM(long v)
+
+--- MACRO VALUE ULONG2NUM(unsigned long n)
+
+--- MACRO char NUM2CHR(VALUE x)
+
+--- MACRO VALUE CHR2FIX(char x)
+
+char 型の整数 x を Ruby の Fixnum に変換します。
+
+--- MACRO type* ALLOC_N(type, n)
+category Memory
+
+type 型のメモリを n 個割り当てる。
+
+--- MACRO type* ALLOC(type)
+
+type 型のメモリを割り当てる。
+
+--- MACRO type* REALLOC_N(var, type, n)
+
+type 型のメモリ領域 var のサイズを n 個に変更する。
+
+--- MACRO type* ALLOCA_N(type, n)
+
+type 型のメモリを n 個スタックフレームに割り当てる。
+このメモリは関数が終わると自動的に解放される。
+
+--- MACRO void MEMZERO(p, type, n)
+
+type 型のメモリ領域 p をゼロクリアする。 n は要素数。
+
+--- MACRO void MEMCPY(p1, p2, type, n)
+
+type 型のメモリ領域 p2 のうち先頭の n 個を p1 にコピーする。
+
+--- MACRO void MEMMOVE(p1, p2, type, n)
+
+type 型のメモリ領域 p2 のうち先頭の n 個を p1 に移動する。
+
+--- MACRO int MEMCMP(p1, p2, type, n)
+
+type 型のメモリ領域 p1 と p2 の先頭 n 個を比較する。
+p1 が p2 の最初の n 個より小さい、等しい、大きいとき、そ
+れぞれ正、0、負の値を返す。
+
+--- MACRO RUBY_METHOD_FUNC(func)
+category Method
+
+任意の関数へのポインタ func を Ruby のメソッドの実体として適する
+型に強制キャストします。
 
 --- MACRO int ISALNUM(char c)
 category String
@@ -242,167 +429,7 @@ category String
 
 --- MACRO int ISXDIGIT(char c)
 
---- MACRO VALUE LL2NUM(long long v)
-category Numeric
-
---- MACRO VALUE LONG2FIX(long i)
-
-INT2FIX と同じです。
-
---- MACRO VALUE LONG2NUM(long v)
-
---- MACRO int MEMCMP(p1, p2, type, n)
-category Memory
-
-type 型のメモリ領域 p1 と p2 の先頭 n 個を比較する。
-p1 が p2 の最初の n 個より小さい、等しい、大きいとき、そ
-れぞれ正、0、負の値を返す。
-
---- MACRO void MEMCPY(p1, p2, type, n)
-
-type 型のメモリ領域 p2 のうち先頭の n 個を p1 にコピーする。
-
---- MACRO void MEMMOVE(p1, p2, type, n)
-
-type 型のメモリ領域 p2 のうち先頭の n 個を p1 に移動する。
-
---- MACRO void MEMZERO(p, type, n)
-
-type 型のメモリ領域 p をゼロクリアする。 n は要素数。
-
---- MACRO int NEGFIXABLE(long f)
-category Numeric
-
---- MACRO void NEWOBJ(obj, int typeflag)
-category Object
-
---- MACRO int NIL_P(VALUE obj)
-category Type/Class
-
-obj が Qnil のとき真。
-
---- MACRO char NUM2CHR(VALUE x)
-category Numeric
-
---- MACRO double NUM2DBL(VALUE x)
-
---- MACRO int NUM2INT(VALUE x)
-
---- MACRO long NUM2LONG(VALUE x)
-
---- MACRO unsigned int NUM2UINT(VALUE x)
-
---- MACRO unsigned long NUM2ULONG(VLAUE x)
-
---- MACRO void OBJ_FREEZE(VALUE x)
-category Flag
-
---- MACRO int OBJ_FROZEN(VALUE x)
-
---- MACRO void OBJ_INFECT(VALUE dest, VALUE src)
-category Security
-
-src に汚染マークが付いていたら dest も汚染する。
-
---- MACRO void OBJ_TAINT(VALUE x)
-
-x に汚染マークを付ける。
-
---- MACRO int OBJ_TAINTED(VALUE x)
-
-x に汚染マークが付いていたら真。
-
---- MACRO void OBJSETUP(obj, VALUE klass, int typeflag)
-category Object
-
-obj をクラス klass とフラグ typeflag で初期化する。
-$SAFE >= 3 のときは無条件で汚染する。
-
---- MACRO int POSFIXABLE(long f)
-category Numeric
-
-f が Fixnum の上限値以下ならば真。
-
---- MACRO struct RArray *RARRAY(VALUE obj)
-category Type/Class
-
-obj を struct RArray* にキャストする。
-本当は obj が struct RArray* でないとしてもキャストしてしまう。
-
---- VALUE rb_fix_new(long v)
-category Numeric
-
---- VALUE rb_int_new(long v)
-
---- int rb_safe_level(void)
-category Security
-
-現在のセーフレベルを返します。
-
---- VALUE rb_uint_new(unsigned int v)
-category Numeric
-
---- MACRO struct RBasic *RBASIC(VALUE obj)
-category Type/Class
-
---- MACRO struct RBignum *RBIGNUM(VALUE obj)
-
---- MACRO struct RClass *RCLASS(VALUE obj)
-
---- MACRO struct RData *RDATA(VALUE obj)
-
---- MACRO type* REALLOC_N(var, type, n)
-category Memory
-
-type 型のメモリ領域 var のサイズを n 個に変更する。
-
---- MACRO struct RFile *RFILE(VALUE obj)
-category Type/Class
-
---- MACRO struct RFloat *RFLOAT(VALUE obj)
-
---- MACRO struct RHash *RHASH(VALUE obj)
-
---- MACRO struct RClass *RMODULE(VALUE obj)
-
---- MACRO struct RObject *ROBJECT(VALUE obj)
-
---- MACRO struct RRegexp *RREGEXP(VALUE obj)
-
---- MACRO struct RString *RSTRING(VALUE obj)
-
---- MACRO struct RStruct *RSTRUCT(VALUE obj)
-
---- MACRO int RTEST(VALUE obj)
-category Type/Class
-
-obj が Qfalse でも Qnil でもないとき真。
-
---- MACRO RUBY_DATA_FUNC(func)
-category DataClass
-
-任意の関数へのポインタ func を struct RData の dmark/dfree の
-値として適する型に強制キャストします。
-
---- MACRO RUBY_METHOD_FUNC(func)
-category Method
-
-任意の関数へのポインタ func を Ruby のメソッドの実体として適する
-型に強制キャストします。
-
---- MACRO SafeStringValue(v)
-category String
-
-[[f:StringValue]] と同じく、val が String でなければ to_str メソッドを
-使って String に変換します。同時に rb_check_safe_str() によるチェックも
-行います。
-
---- MACRO int SPECIAL_CONST_P(VALUE obj)
-category Type/Class
-
-obj が実体の構造体を持たないとき真。
-現時点で真になるのは Qnil, Qtrue, Qfalse と、
-Fixnum, Symbol のインスタンス。
+#@until 1.9.0
 
 --- MACRO char *STR2CSTR(VALUE str)
 category String
@@ -425,40 +452,4 @@ Ruby 1.7 以降では代わりに [[f:StringValuePtr]] を使用します。こちら
 [[f:StringValue]] は、引数が to_str による暗黙の型変換を期待する
 場合に使用します。
 
---- MACRO void StringValue(VALUE val)
-
-val が String でなければ to_str メソッドを使って String に変換します。
-
-このマクロに渡した VALUE は ruby の GC から確実に保護されます。
-
---- MACRO char *StringValuePtr(VALUE val)
-
-val が String でなければ to_str メソッドを使って String に変換し、
-その実体のポインタを返します。
-
-このマクロに渡した VALUE は ruby の GC から確実に保護されます。
-
---- MACRO int SYM2ID(VALUE symbol)
-category Symbol/Id
-
-Symbol symbol を数値に変換します。
-1.4では、[[f:FIX2INT]](symbol)と同じです。
-
---- MACRO int SYMBOL_P(VALUE obj)
-
-obj が Symbol のインスタンスのとき真。
-
---- MACRO int TYPE(VALUE obj)
-category Type/Class
-
-obj の構造体型 ID を返します。
-
---- MACRO VALUE UINT2NUM(unsigned int i)
-category Numeric
-
-任意の整数を Fixnum か Bignum に変換します。
-
---- MACRO VALUE ULL2NUM(unsigned long long n)
-
---- MACRO VALUE ULONG2NUM(unsigned long n)
-
+#@end
