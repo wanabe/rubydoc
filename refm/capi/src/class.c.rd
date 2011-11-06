@@ -1,12 +1,64 @@
+#@# intern.h
+
 --- VALUE rb_class_boot(VALUE super)
 category Class/Module
 
 スーパークラスを super とするクラスオブジェクトを作成し、返します。
 
+--- VALUE rb_class_new(VALUE super)
+
+super をスーパークラスとして
+新しいクラスオブジェクトを生成し、返します。
+
+--- VALUE rb_singleton_class_clone(VALUE klass)
+
+特異クラス klass を clone して返します。
+klass が特異クラスでないときはただ klass を返します。
+
+--- void rb_singleton_class_attached(VALUE klass, VALUE obj)
+
+特異クラス klass にその唯一のインスタンス obj を結びつけます。
+
+--- VALUE rb_make_metaclass(VALUE obj, VALUE klass)
+
+クラス klass のインスタンス obj に特異クラスを導入し
+特異クラスと obj を結びつけます。
+
 --- VALUE rb_class_inherited(VALUE super, VALUE klass)
 
 クラス super の下位クラス klass が作成されたことを
 受けて、super に対し inherited メソッドを呼び出します。
+
+--- VALUE rb_define_class_id(ID id, VALUE super)
+
+クラス名 id でクラス super を継承したクラスを
+新しく作成する。クラス→クラス名 (定数名) の関連付けは
+なされるが、定数→クラスの関連付けはなされない。
+
+--- VALUE rb_module_new(void)
+
+新しいモジュールオブジェクトを作成し、返します。
+
+--- VALUE rb_define_module_id(ID id)
+
+名前が id である新しいモジュールを定義し、それを返します。
+モジュール→名前 (定数) のリンクは確立しますが
+名前→モジュールのリンクはまだ確立していません。
+
+--- VALUE rb_mod_included_modules(VALUE mod)
+
+モジュール mod にインクルードされているモジュールの配列を返します。
+
+--- VALUE rb_mod_include_p(VALUE mod, VALUE mod2)
+
+モジュール mod が mod2 をインクルードしていれば真。
+
+--- VALUE rb_mod_ancestors(VALUE mod)
+
+モジュール mod にインクルードされているモジュール、
+さらに mod がクラスならばスーパークラスとそれに
+インクルードされているモジュールを再帰的に集めて
+メソッド探索優先順位順に並べて返します (早く探索されるほうが前)。
 
 --- VALUE rb_class_instance_methods(int argc, VALUE *argv, VALUE mod)
 category Method
@@ -15,60 +67,90 @@ Module#instance_methods の実体。
 モジュール mod に定義されている public メソッド名の
 リストを文字列の配列で返します。
 
---- VALUE rb_class_new(VALUE super)
-category Class/Module
-
-super をスーパークラスとして
-新しいクラスオブジェクトを生成し、返します。
-
---- VALUE rb_class_private_instance_methods(int argc, VALUE *argv, VALUE mod)
-category Method
-
-Module#private_instance_methods の実体。
-モジュール mod に定義されている private メソッド名の
-リストを文字列の配列で返します。
-
 --- VALUE rb_class_protected_instance_methods(int argc, VALUE *argv, VALUE mod)
 
 Module#protected_instance_methods の実体。
 モジュール mod に定義されている protected メソッド名の
 リストを文字列の配列で返します。
 
---- void rb_define_alias(VALUE klass, const char *new, const char *old)
+--- VALUE rb_class_private_instance_methods(int argc, VALUE *argv, VALUE mod)
+
+Module#private_instance_methods の実体。
+モジュール mod に定義されている private メソッド名の
+リストを文字列の配列で返します。
+
+--- VALUE rb_obj_singleton_methods(int argc, VALUE *argv, VALUE obj)
+
+Object#singleton_methods の実体。
+オブジェクト obj に定義されている特異メソッド名のリストを
+文字列の配列で返す。
+
+--- void rb_define_method_id(VALUE klass, ID name, VALUE (*func)(), int argc)
+
+klass に public メソッド name を定義します。
+その実体は関数 func です。また argc の意味は
+rb_define_method と同じです。
+
+--- void rb_define_protected_method(VALUE klass, const char *name, VALUE (*func)(), int argc)
+
+クラス klass に protected インスタンスメソッド name を
+定義します。その実体は関数 func であり、その関数がとる
+引数のタイプを argc で指定します。argc のフォーマットに
+ついては rb_define_method の項を参照してください。
+
+--- void rb_define_private_method(VALUE klass, const char *name, VALUE(*func)(), int argc)
 category Method
 
-クラス klass のインスタンスメソッド old の
-別名 new を定義します。
+クラス klass にプライベートインスタンスメソッド name を
+定義します。その実体は関数 func であり、その関数がとる
+引数のタイプを argc で指定します。argc のフォーマットに
+ついては rb_define_method の項を参照してください。
 
---- void rb_define_attr(VALUE klass, const char *name, int read, int write)
+--- void rb_define_singleton_method(VALUE obj, const char *name, VALUE (*func)(), int argc)
 
-クラス klass にメソッド name と name= を定義します。
-read が真のときは name を定義し、
-write が真のときは name= を定義します。
+obj に特異メソッド name を定義します。
+メソッドの実体を func に関数ポインタで与え、その関数がとる
+引数のタイプを argc に渡します。argc のフォーマットに
+ついては rb_define_method の記述を参照してください。
+
+--- VALUE rb_singleton_class(VALUE obj)
+category Class/Module
+
+obj に特異クラスを導入し、その特異クラスを返します。
+すでに特異クラスが導入されているときはそれをそのまま返します。
+
+obj が特異メソッドを定義できない型のオブジェクトである
+ときは例外 TypeError を発生します。
+
+#@# ruby.h
 
 --- VALUE rb_define_class(const char *name, VALUE super)
 category Class/Module
 
 クラス super の下位クラス name を作成し返します。
 
---- VALUE rb_define_class_id(ID id, VALUE super)
+--- VALUE rb_define_module(const char *name)
 
-クラス名 id でクラス super を継承したクラスを
-新しく作成する。クラス→クラス名 (定数名) の関連付けは
-なされるが、定数→クラスの関連付けはなされない。
+モジュール name を作成し返します。
 
 --- VALUE rb_define_class_under(VALUE outer, const char *name, VALUE super)
 
 クラス super の下位クラス outer::name
 を作成し返します。
 
---- void rb_define_global_function(const char *name, VALUE (*func)(), int argc)
-category Method
+--- VALUE rb_define_module_under(VALUE outer, const char *name)
 
-関数 name を定義します。
-func と argc は rb_define_method と同じです。
+モジュール outer::name を作成し返します。
+
+--- void rb_include_module(VALUE klass, VALUE module)
+category Class/Module
+
+Module#append_features の実体。
+クラスまたはモジュール klass にモジュール module を
+インクルードします。
 
 --- void rb_define_method(VALUE klass, const char *name, VALUE(*func)(), int argc)
+category Method
 
 クラスklassのインスタンスメソッドnameを定義します。
 
@@ -93,101 +175,30 @@ argcはCの関数へ渡される引数の数(と形式)を決めます．
 
 [[f:rb_scan_args]] も参照
 
---- void rb_define_method_id(VALUE klass, ID name, VALUE (*func)(), int argc)
-
-klass に public メソッド name を定義します。
-その実体は関数 func です。また argc の意味は
-rb_define_method と同じです。
-
---- VALUE rb_define_module(const char *name)
-category Class/Module
-
-モジュール name を作成し返します。
-
 --- void rb_define_module_function(VALUE module, const char *name, VALUE (*func)(), int argc)
-category Method
 
 モジュール module にモジュール関数 name を定義します。
 func と argc は rb_define_method と同じです。
 
---- VALUE rb_define_module_id(ID id)
-category Class/Module
+--- void rb_define_global_function(const char *name, VALUE (*func)(), int argc)
 
-名前が id である新しいモジュールを定義し、それを返します。
-モジュール→名前 (定数) のリンクは確立しますが
-名前→モジュールのリンクはまだ確立していません。
+関数 name を定義します。
+func と argc は rb_define_method と同じです。
 
---- VALUE rb_define_module_under(VALUE outer, const char *name)
+--- void rb_undef_method(VALUE klass, const char *name)
 
-モジュール outer::name を作成し返します。
+クラス klass のインスタンスメソッド name を undef します。
 
---- void rb_define_private_method(VALUE klass, const char *name, VALUE(*func)(), int argc)
-category Method
+--- void rb_define_alias(VALUE klass, const char *new, const char *old)
 
-クラス klass にプライベートインスタンスメソッド name を
-定義します。その実体は関数 func であり、その関数がとる
-引数のタイプを argc で指定します。argc のフォーマットに
-ついては rb_define_method の項を参照してください。
+クラス klass のインスタンスメソッド old の
+別名 new を定義します。
 
---- void rb_define_protected_method(VALUE klass, const char *name, VALUE (*func)(), int argc)
+--- void rb_define_attr(VALUE klass, const char *name, int read, int write)
 
-クラス klass に protected インスタンスメソッド name を
-定義します。その実体は関数 func であり、その関数がとる
-引数のタイプを argc で指定します。argc のフォーマットに
-ついては rb_define_method の項を参照してください。
-
---- void rb_define_singleton_method(VALUE obj, const char *name, VALUE (*func)(), int argc)
-
-obj に特異メソッド name を定義します。
-メソッドの実体を func に関数ポインタで与え、その関数がとる
-引数のタイプを argc に渡します。argc のフォーマットに
-ついては rb_define_method の記述を参照してください。
-
---- void rb_include_module(VALUE klass, VALUE module)
-category Class/Module
-
-Module#append_features の実体。
-クラスまたはモジュール klass にモジュール module を
-インクルードします。
-
---- VALUE rb_make_metaclass(VALUE obj, VALUE klass)
-
-クラス klass のインスタンス obj に特異クラスを導入し
-特異クラスと obj を結びつけます。
-
---- VALUE rb_mod_ancestors(VALUE mod)
-
-モジュール mod にインクルードされているモジュール、
-さらに mod がクラスならばスーパークラスとそれに
-インクルードされているモジュールを再帰的に集めて
-メソッド探索優先順位順に並べて返します (早く探索されるほうが前)。
-
---- VALUE rb_mod_clone(VALUE mod)
-
-モジュール mod を clone して返します。
-
---- VALUE rb_mod_dup(VALUE mod)
-
-モジュール mod を dup して返します。
-
---- VALUE rb_mod_include_p(VALUE mod, VALUE mod2)
-
-モジュール mod が mod2 をインクルードしていれば真。
-
---- VALUE rb_mod_included_modules(VALUE mod)
-
-モジュール mod にインクルードされているモジュールの配列を返します。
-
---- VALUE rb_module_new(void)
-
-新しいモジュールオブジェクトを作成し、返します。
-
---- VALUE rb_obj_singleton_methods(int argc, VALUE *argv, VALUE obj)
-category Method
-
-Object#singleton_methods の実体。
-オブジェクト obj に定義されている特異メソッド名のリストを
-文字列の配列で返す。
+クラス klass にメソッド name と name= を定義します。
+read が真のときは name を定義し、
+write が真のときは name= を定義します。
 
 --- int rb_scan_args(int argc, const VALUE *argv, const char *fmt, ...)
 category Method
@@ -223,32 +234,22 @@ fmt のフォーマットは以下の通りです。
 
       def some_method(a, *rest, &block)
 
---- VALUE rb_singleton_class(VALUE obj)
-category Class/Module
+#@until 1.9.0
 
-obj に特異クラスを導入し、その特異クラスを返します。
-すでに特異クラスが導入されているときはそれをそのまま返します。
+--- VALUE rb_mod_clone(VALUE mod)
+category
 
-obj が特異メソッドを定義できない型のオブジェクトである
-ときは例外 TypeError を発生します。
+モジュール mod を clone して返します。
 
---- void rb_singleton_class_attached(VALUE klass, VALUE obj)
+--- VALUE rb_mod_dup(VALUE mod)
 
-特異クラス klass にその唯一のインスタンス obj を結びつけます。
-
---- VALUE rb_singleton_class_clone(VALUE klass)
-
-特異クラス klass を clone して返します。
-klass が特異クラスでないときはただ klass を返します。
+モジュール mod を dup して返します。
 
 --- VALUE rb_singleton_class_new(VALUE super)
 
 super をスーパークラスとする特異クラスを生成し、返します。
 
---- void rb_undef_method(VALUE klass, const char *name)
-category Method
-
-クラス klass のインスタンスメソッド name を undef します。
+#@end
 
 #@if(visibility > "1")
 
