@@ -108,6 +108,10 @@ new は [[m:Class#allocate]] でインスタンスを生成し、
 
 @param str Ruby のオブジェクトがダンプされた文字列を指定します。
 
+== Undefined Instance Methods
+
+--- module_function
+
 == Private Instance Methods
 
 --- inherited(subclass)     -> ()
