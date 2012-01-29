@@ -1,5 +1,14 @@
 #@# Author: Keiju ISHITSUKA
 
+require e2mmap
+require irb/init
+require irb/context
+require irb/extend-command
+#@# TODO: 追加する。
+#@# require irb/ruby-lex
+require irb/input-method
+require irb/locale
+
 irb は Interactive Ruby の略です。
 irb を使うと、Ruby の式を標準入力から簡単に入力・実行することができます。
 
@@ -21,7 +30,7 @@ irb コマンドを実行すると、以下のようなプロンプトが表れます。
   irb(main):005:2>   end
   irb(main):006:1> end
   nil
-  irb(main):007:0> 
+  irb(main):007:0>
 
 また irb コマンドは [[lib:readline]] ライブラリにも対応しています。
 readline ライブラリがインストールされている時には
@@ -80,9 +89,7 @@ irb コマンドのオプションを指定したのと同じ効果が得られます。
   IRB.conf[:DEBUG_LEVEL] = 1
   IRB.conf[:ECHO] = nil
   IRB.conf[:EVAL_HISTORY] = nil
-#@since 1.9.1
   IRB.conf[:HISTORY_FILE] = nil
-#@end
   IRB.conf[:IGNORE_EOF] = true
   IRB.conf[:IGNORE_SIGINT] = true
   IRB.conf[:INSPECT_MODE] = nil
@@ -92,9 +99,7 @@ irb コマンドのオプションを指定したのと同じ効果が得られます。
   IRB.conf[:PROMPT] = {....}
   IRB.conf[:PROMPT_MODE] = :DEFAULT
   IRB.conf[:SINGLE_IRB] = false
-#@since 1.9.1
   IRB.conf[:SAVE_HISTORY] = nil
-#@end
   IRB.conf[:USE_LOADER] = true
   IRB.conf[:USE_READLINE] = nil
   IRB.conf[:USE_TRACER] = true
@@ -160,7 +165,7 @@ PROMPT_I, PROMPT_S, PROMPT_C にはフォーマット文字列を指定します。
     :PROMPT_S => "%N(%m):%03n:%i%l ",
     :PROMPT_C => "%N(%m):%03n:%i* ",
     :RETURN => "%s\n"
-  } 
+  }
 
 プロンプトモードは :DEFAULT
 の他に :NULL, :CLASSIC, :SIMPLE, :XMP が定義されています。
@@ -220,7 +225,7 @@ IRB::Context オブジェクトを渡して実行します。
   irb(main):001:0> IRB.conf[:IRB_RC] = lambda {|conf| conf.prompt_i = "> " }
   => #<Proc:0x00002a95fa3fd8@(irb):2>
   irb(main):002:0> irb
-  > 
+  >
 
 === irb の使用例
 
@@ -260,7 +265,7 @@ irb のいろいろな使用例を以下に示します。
   nil
   irb#2(Foo):010:0>  Foo.instance_methods
   ["bar", "foo"]
-  irb#2(Foo):011:0> fg 0                      
+  irb#2(Foo):011:0> fg 0
   nil
   irb(main):007:0> f = Foo.new
   #<Foo:0x4010af3c>
@@ -286,115 +291,214 @@ irb のいろいろな使用例を以下に示します。
 
 === irb で使用可能なコマンド一覧
 
-この一覧に記述されているメソッドは、irb のプロンプトでレシーバなしで使
+この一覧に記述されているコマンドは、irb のプロンプトでレシーバなしで使
 うことができます。
 
 irb のコマンドは、簡単な名前と頭に「irb_」をつけた名前との両方が定義さ
 れています。これは、簡単な名前がオーバーライドされた場合にもirb のコマ
 ンドが実行できるようにするためです。
 
-: exit(ret = 0)
-: irb_exit(ret = 0)
-: quit(ret = 0)
-: irb_quit(ret = 0)
-#@todo
+: exit
+: irb_exit
+: quit
+: irb_quit
 
-irb を終了します。
-サブ irb で呼び出した場合は、そのサブ irb だけを終了します。
+  irb を終了します。
+  サブ irb で呼び出した場合は、そのサブ irb だけを終了します。
+
+#@# ret は使用されていないようなので、削除しました。
 
 : conf
 : context
 : irb_context
-#@todo
 
-irb の現在の設定です。[[c:IRB::Context]] オブジェクトです。
-このメソッドで得た IRB::Context オブジェクトに対してメソッドを
-呼び出すことで、現在稼働中の irb インタプリタの設定を表示・変更できます。
+  irb の現在の設定です。[[c:IRB::Context]] オブジェクトです。
+  このメソッドで得た IRB::Context オブジェクトに対してメソッドを
+  呼び出すことで、現在稼働中の irb インタプリタの設定を表示・変更できます。
 
-: cws([obj])
-: chws([obj])
-: irb_cws([obj])
-: irb_chws([obj])
-: irb_change_workspace([obj])
-#@todo
+: cwws
+: pwws
+: irb_cwws
+: irb_pwws
+: irb_print_working_workspace
+: irb_current_working_binding
+: irb_print_working_binding
+: irb_cwb
+: irb_pwb
 
-irb の self を obj に変更します。
-obj が省略されたときは、
-irb を起動したときの main オブジェクトを self にします。
+  irb の self を返します。
 
-: pushws([obj])
-: irb_pushws([obj])
-: irb_push_workspace([obj])
-#@todo
+: cws(*obj)
+: chws(*obj)
+: irb_cws(*obj)
+: irb_chws(*obj)
+: irb_change_workspace(*obj)
+: cb(*obj)
+: irb_cb(*obj)
+: irb_change_binding(*obj)
 
-UNIX シェルコマンドの pushd と同じです。
+  irb の self を obj に変更します。
+  obj が省略されたときは、
+  irb を起動したときの main オブジェクトを self にします。
+
+: workspaces
+: irb_workspaces
+: irb_bindings
+: bindings
+
+  現在のワークスペースの一覧を返します。
+
+: pushws(*obj)
+: irb_pushws(*obj)
+: irb_push_workspace(*obj)
+: irb_push_binding(*obj)
+: irb_pushb(*obj)
+: pushb(*obj)
+
+  UNIX シェルコマンドの pushd と同じです。
 
 : popws
 : irb_popws
 : irb_pop_workspace
-#@todo
+: irb_pop_binding
+: irb_popb
+: popb
 
-UNIX シェルコマンドの popd と同じです。
+  UNIX シェルコマンドの popd と同じです。
 
-: irb([obj])
-#@todo
+: irb
+: irb(obj)
 
-新しいサブ irb インタプリタを起動します。
-オブジェクト obj が指定された時はその obj を self にします。
+  新しいサブ irb インタプリタを起動します。
+  オブジェクト obj が指定された時はその obj を self にします。
 
 : jobs
 : irb_jobs
-#@todo
 
-サブ irb のリストを返します。
+  サブ irb のリストを返します。
 
 : fg(n)
 : irb_fg(n)
-#@todo
 
-n で指定したサブ irb に移動します。
-n は以下のいずれかの値で指定します。
+  n で指定したサブ irb に移動します。
+  n は以下のいずれかの値で指定します。
 
+//emlist{
   * irb インタプリタ番号
   * irb オブジェクト
   * スレッド ID
   * 各インタプリタの self (「irb(obj)」で起動した時の obj)
+//}
 
 : kill(n)
 : irb_kill(n)
-#@todo
 
-n で指定したサブ irb を停止します。
-n は以下のいずれかの値で指定します。
+  n で指定したサブ irb を停止します。
+  n は以下のいずれかの値で指定します。
 
+//emlist{
   * irb インタプリタ番号
   * irb オブジェクト
   * スレッド ID
   * 各インタプリタの self (「irb(obj)」で起動した時の obj)
+//}
 
 : source(path)
 : irb_source(path)
-#@todo
 
-現在の irb インタプリタ上で、
-Ruby スクリプト path を評価します。
+  現在の irb インタプリタ上で、
+  Ruby スクリプト path を評価します。
 
-source という名前は UNIX シェルの source コマンドに由来します。
+  path の内容を irb で一行ずつタイプしたかのように、irb 上で一行ずつ評
+  価されます。[[m:$"]] は更新されず、何度でも実行し直す事ができます。
 
+  source という名前は UNIX シェルの source コマンドに由来します。
+
+#@since 1.9.1
+: irb_load(path, prev = nil)
+#@else
 : irb_load(path, prev)
-#@todo
+#@end
 
-ファイル path を Ruby スクリプトとみなし、
-現在の irb インタプリタ上で実行します。
-Ruby の load の irb 版です。
+  Ruby の load の irb 版です。
+  ファイル path を Ruby スクリプトとみなし、
+  現在の irb インタプリタ上で実行します。
+  ただし、prev に true を指定した場合は実行は内部的に生成される無名モジュー
+  ル上で行われ、グローバルな名前空間を汚染しません。
 
-: _  
-#@todo
+  [[m:Kernel.#load]] と異なり、path の内容を irb で一行ずつタイプしたか
+  のように、irb 上で一行ずつ評価されます。
 
-直前の式の実行結果です。
+: irb_require(path)
 
-例：
+  Ruby の require の irb 版です。
+  ファイル path を現在の irb インタプリタ上で実行します。
 
+  path に Ruby スクリプトを指定した場合は、[[m:Kernel.#kernel]] と異な
+  り、path の内容を irb で一行ずつタイプしたかのように、irb 上で一行ず
+  つ評価されます。require に成功した場合は true を、そうでない場合は
+  false を返します。
+
+  拡張ライブラリ(*.so,*.o,*.dll など)を指定した場合は単純に require さ
+  れます。
+
+: help(*names)
+: irb_help(*names)
+
+  RI から Ruby のドキュメントを参照します。
+
+//emlist{
+  irb(main):001:0> help String#match
+  ...
+//}
+
+#@since 1.9.2
+  names を指定しなかった場合は、RI を対話的なモードで起動します。メソッ
+  ド名などを入力する事でドキュメントの検索が行えます。入力のタブ補完を
+  する事ができます。また、空行を入力する事で irb のプロンプトに戻る事が
+  できます。
+
+//emlist{
+  irb(main):001:0> help
+
+  Enter the method name you want to look up.
+  You can use tab to autocomplete.
+  Enter a blank line to exit.
+
+  >> String#match
+  String#match
+  
+  (from ruby core)
+  ------------------------------------------------------------------------------
+    str.match(pattern)        -> matchdata or nil
+    str.match(pattern, pos)   -> matchdata or nil
+  ...
+//}
+#@end
+
+#@until 1.9.1
+==== コマンド実行時の注意
+
+以下のコマンドは引数を指定せずに実行した場合にはエラーが発生します。
+
+ * cwws
+ * cws
+ * workspaces
+ * irb
+ * irb_load
+
+また、help コマンドは 1.8 系では動作しないバグがあります。
+#@end
+
+=== システム変数
+
+: _
+
+  直前の式の実行結果です。
+
+  例：
+
+//emlist{
   $ irb
   irb(main):001:0> 10
   => 10
@@ -404,22 +508,23 @@ Ruby の load の irb 版です。
   => 4294967296
   irb(main):004:0> _ - 2**31
   => 2147483648
-  irb(main):005:0> 
+  irb(main):005:0>
+//}
 
-: __ 
-#@todo
+: __
 
-実行結果の履歴です。
-__[lineno] で、lineno 行で実行した結果を得られます。
-lineno が負の時は、最新の結果から -lineno 行だけ前の
-結果を得られます。
+  実行結果の履歴です。
+  __[lineno] で、lineno 行で実行した結果を得られます。
+  lineno が負の時は、最新の結果から -lineno 行だけ前の
+  結果を得られます。
 
-この変数はデフォルトでは使えません。
-この変数を使用するには、あらかじめ .irbrc などで
-conf.eval_history の値を指定しておかなければいけません。
+  この変数はデフォルトでは使えません。
+  この変数を使用するには、あらかじめ .irbrc などで
+  conf.eval_history の値を指定しておかなければいけません。
 
-例：
+  例：
 
+//emlist{
   $ irb
   irb(main):001:0> conf.eval_history = 100
   => 100
@@ -433,12 +538,12 @@ conf.eval_history の値を指定しておかなければいけません。
   => "hogefoo"
   irb(main):006:0> __[-1]
   => "hogefoo"
-  irb(main):007:0> 
-
+  irb(main):007:0>
+//}
 
 === 使用上の制限
 
-irbは, 評価できる時点(式が閉じた時点)での逐次実行を行ないます. 
+irbは, 評価できる時点(式が閉じた時点)での逐次実行を行ないます.
 したがって, rubyを直接使った時と若干異なる動作を行なう場合があります.
 
 現在明らかになっている問題点を説明します.
@@ -462,7 +567,7 @@ Ruby は最初にスクリプト全体をコンパイルしてローカル変数を決定します。
 それに対し、irb は式が完結して実行可能になった時点で順番にコンパイルします。
 上記の例では、
 
-  eval "foo = 0" 
+  eval "foo = 0"
 
 が入力された時点でまずその式をコンパイル・実行します。
 この時点で変数 foo が定義されるため、
@@ -488,8 +593,6 @@ irb では以下のように式を begin 〜 end でくくって入力してください。
 irb はシンボルであるかどうかの判断を間違えることがあります。
 具体的には、式が完了しているのに継続行と見なすことがあります。
 
-#@since 1.9.1
-#@# 1.8.2 に入っていない理由は ((<ruby-dev:25595>)) を参照してください
 === 履歴の保存
 
 さらに、.irbrc で以下のように
@@ -500,134 +603,108 @@ conf.save_history の値を指定しておくと、
 
 履歴ファイルの名前はデフォルトでは ~/.irb_history です。
 履歴ファイルの名前は IRB.conf[:HISTORY_FILE] で指定できます。
+
+#@since 1.9.2
+===[a:inspect_mode] 実行結果の出力方式
+
+irb のプロンプト中では conf.inspect_mode で、.irbrc 中では
+IRB.conf[:INSPECT_MODE] に以下のいずれかの値を設定する事で、結果出力の
+方式を変更する事ができます。
+
+: false, :to_s, :raw
+
+  出力結果を to_s したものを表示します。
+
+: true, :p, :inspect
+
+  出力結果を inspect したものを表示します。
+
+: :pp, :pretty_inspect
+
+  出力結果を pretty_inspect したものを表示します。
+
+: :yaml, :YAML
+
+  出力結果を YAML 形式にしたものを表示します。
+
+: :marshal, :Marshal, :MARSHAL, [[c:Marshal]]
+
+  出力結果を [[m:Marshal.#dump]] したものを表示します。
+
+例:
+
+  $ irb
+  irb(main):001:0> conf.inspect_mode = :yaml
+  irb(main):002:0> :foo # => --- :foo
+
+また、irb の起動時に --inspect オプションを指定する事でも同様の設定を行
+えます。
+
+  $ irb --inspect [raw|p|pp|yaml|marshal|...]
+
+上記以外にも独自の出力方式を追加する事ができます。詳しくは
+[[m:IRB::INSPECTORS.def_inspector]] を参照してください。
 #@end
 
-= class IRB::Context
+= module IRB
 
-== Methods
+irb のメインモジュールです。
 
---- eval_history=(n)
-#@todo
+== Class Methods
 
-実行結果のヒストリ機能の設定.
-n は整数か nil で n > 0 であればその数だけヒストリにためる。
-n = 0の時は無制限に記憶する.
-n = nil だとヒストリ機能はやめる (デフォルト). 
+--- conf -> Hash
 
---- back_trace_limit
-#@todo
+irb の設定をハッシュで返します。
 
-バックトレース表示をバックトレースの頭から n,
-後ろから n だけ行なう.
-デフォルトは 16.
-    
---- debug_level=(n)
-#@todo
+--- version -> String
 
-irb のデバッグレベルの設定
+IRB のバージョンを文字列で返します。
 
---- ignore_eof
---- ignore_eof=(bool)
-#@todo
+--- CurrentContext -> IRB::Context
 
-Ctrl-D が入力された時の動作を設定する.
-true の時は Ctrl-D を無視する.
-false の時は irb を終了する. 
+現在の irb に関する [[c:IRB::Context]] を返します。
 
---- ignore_sigint
---- ignore_sigint=(bool)
-#@todo
+--- start(ap_path = nil) -> ()
 
-Ctrl-C が入力された時の動作を設定します。
-false 時は irb を終了します。
-true の時の動作は以下のようになる.
+[[c:IRB]] を初期化して、トップレベルの irb を開始します。
 
-: 入力中
-    これまで入力したものをキャンセルしトップレベルに戻る. 
-: 実行中
-    実行を中止する.
+@param ap_path irb コマンドのパスを指定します。
 
---- inf_ruby_mode
---- inf_ruby_mode=(bool)
-#@todo
+--- irb_at_exit -> ()
 
-inf-ruby-mode 用のプロンプト表示を行なうかどうかを表します。
-デフォルト値は false です。
+at_exit で登録された処理を実行します。
 
---- inspect_mode=(val)
-#@todo
+ユーザが直接使用するものではありません。
 
-インスペクトモードを設定する.
+--- irb_exit(irb, ret) -> object
 
-: true
-    inspect の結果を表示する
-: false
-    to_s の結果を表示する
-: nil
-    irb が通常モードであれば inspect mode、
-    math モードなら non inspect mode
+irb を終了します。ret で指定したオブジェクトを返します。
 
---- math_mode
-#@todo
+@param irb 現在の [[c:IRB::Irb]] オブジェクトを指定します。
 
-分数と行列の計算ができる bc モードかどうかを表します。
+@param ret 戻り値を指定します。
 
---- use_loader
---- use_loader=(bool)
-#@todo
+ユーザが直接使用するものではありません。
 
-load または require 時に
-irb のファイル読み込み機能を使うかどうかを示します。
-デフォルト値は false です。
+--- irb_abort(irb, exception = Abort)
 
-use_loader の値は irb 全体に反映されます。
+実行中の処理を中断します。必ず例外が発生するため、何も返しません。
 
---- prompt_c
-#@todo
+@param irb 現在の [[c:IRB::Irb]] オブジェクトを指定します。
 
-if の直後など, 行が継続している時のプロンプトを
-表現するフォーマット文字列を返します。
+@param exception 発生させる例外を指定します。指定しなかった場合は
+                 [[c:IRB::Abort]] が発生します。
 
---- prompt_i
-#@todo
+@raise exception 引数 exception で指定した例外が発生します。
 
-通常のプロンプトを表現するフォーマット文字列を返します。
+ユーザが直接使用するものではありません。
 
---- prompt_s
-#@todo
+= class IRB::Irb
 
-文字列中のプロンプトを表現するフォーマット文字列を返します。
+irb インタプリタのメインルーチンです。
 
---- rc
-#@todo
+ユーザが直接使用するものではありません。
 
-~/.irbrc を読み込んでいたら true を返します。
-読み込んでいなければ false を返します。
+= class IRB::Abort < Exception
 
---- use_prompt
---- use_prompt=(bool)
-#@todo
-
-プロンプトを表示するかどうかを指定します。
-use_prompt の値が true ならプロンプトを表示し、
-false ならプロンプトを表示しません。
-
-デフォルト値は true です。
-
---- use_readline=(val)
-#@todo
-
-[[lib:readline]] を使うかどうかを指定します。
-val の値によって、このメソッドの効果は以下のように分かれます。
-
-: true
-    readline ライブラリを使う
-: false
-    readline ライブラリを使わない
-: nil
-    inf-ruby-mode 以外で readline ライブラリを利用しようとする (デフォルト)
-
-#@#--- verbose=(bool)
-#@#
-#@#irbからいろいろなメッセージを出力するか
-#@#
+実行中の処理を中断する時に発生させる例外クラスです。

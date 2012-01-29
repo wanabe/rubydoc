@@ -96,7 +96,7 @@ obj のクラスを返します。
 --- MACRO int BUILTIN_TYPE(VALUE obj)
 
 obj の構造体型 ID を返します。
-[[f:SPECIAL_CONST_P(obj)]] が真のオブジェクトに対して使うと落ちます。
+[[f:SPECIAL_CONST_P]](obj) が真のオブジェクトに対して使うと落ちます。
 
 --- MACRO int TYPE(VALUE obj)
 

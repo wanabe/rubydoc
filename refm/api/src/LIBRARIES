@@ -129,8 +129,28 @@ io/wait
 ipaddr
 #@end
 irb
+irb/cmd/chws
+irb/cmd/help
+irb/cmd/load
+irb/cmd/nop
+irb/cmd/pushws
+irb/cmd/subirb
 irb/completion
+irb/context
+irb/extend-command
 irb/frame
+irb/help
+irb/init
+irb/input-method
+#@since 1.9.2
+irb/inspector
+#@end
+irb/locale
+#@since 1.9.1
+irb/magic-file
+#@end
+irb/notifier
+irb/output-method
 irb/xmp
 #@until 1.9.1
 jcode

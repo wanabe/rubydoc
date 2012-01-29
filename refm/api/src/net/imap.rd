@@ -179,10 +179,10 @@ untagged な応答はコマンドの送信とは非同期的にサーバから送られるため、
     Myers, J., "IMAP4 ACL extension", RFC 2086, January 1997.
 
   * [OSSL]
-    http://www.openssl.org
+    [[url:http://www.openssl.org]]
 
   * [RSSL]
-    http://savannah.gnu.org/projects/rubypki
+    [[url:http://savannah.gnu.org/projects/rubypki]]
 
 以上のうち、いくつかの RFC は obsolete になって置き換えられています。
 [[RFC:2060]] は [[RFC:3501]] に、[[RFC:822]] は [[RFC:2822]] に、
@@ -494,7 +494,7 @@ LIST コマンドを送り、クライアントから利用可能なメールボックス名の集合から
 返り値が空集合である場合は空の配列でなく nil を返します。
 
 @param refname 参照名(文字列)
-@param mailbox 調べるメールボックスの名前(文字列)。ワイルドカードを含んでいてもよい。
+@param mailbox 調べるメールボックスの名前(文字列)。ワイルドカードを含んでいてもかまいません。
 
 例:
   imap.create("foo/bar")
@@ -520,7 +520,7 @@ LIST コマンドを送り、active/subscribed なメールボックス名の集合から
 返り値が空集合である場合は空の配列でなく nil を返します。
 
 @param refname 参照名(文字列)
-@param mailbox 調べるメールボックスの名前(文字列)。ワイルドカードを含んでいてもよい。
+@param mailbox 調べるメールボックスの名前(文字列)。ワイルドカードを含んでいてもかまいません。
 
 --- status(mailbox, attr) -> {String => Integer}
 STATUS コマンドを送り、mailbox のステータスを得ます。
@@ -562,7 +562,7 @@ APPEND コマンドを送ってメッセージをメールボックスの末尾に追加します。
 
 
 --- check -> Net::IMAP::TaggedResponse
-CHECK コマンドを送り、現在処理しているメールボッススの
+CHECK コマンドを送り、現在処理しているメールボックスの
 チェックポイントを要求します。
 
 チェックポイントの要求とは、サーバ内部で保留状態になっている
@@ -680,13 +680,13 @@ UID FETCH コマンドを送り、メールボックス内のメッセージに
 指定したメールボックスを対象とします。
 
 set で対象とするメッセージを指定します。
-これには sequence number、sequence number の配列、もしくは
+これには UID、UID の配列、もしくは
 [[c:Range]] オブジェクトを渡します。
 attr には取得するアトリビュートを文字列の配列で渡してください。
 指定可能なアトリビュートについては [[m:Net::IMAP::FetchData#attr]] 
 を見てください。
 
-@param set 処理対象のメッセージの sequence number
+@param set 処理対象のメッセージの UID
 @param attr アトリビュート(文字列配列)
 @see [[m:Net::IMAP#fetch]]
 
@@ -773,14 +773,14 @@ UID COPY コマンドを送り、指定したメッセージを
 指定したメールボックスの末尾に追加します。
 
 set でコピーするメッセージを指定します。
-message sequence number(整数)、
-message sequence numberの配列、もしくは [[c:Range]] で
+UID (整数)、
+UID の配列、もしくは [[c:Range]] で
 指定します。コピー元のメールボックスは
 [[m:Net::IMAP#examine]] もしくは [[m:Net::IMAP#select]] で
 指定したものを用います。
 mailbox はコピー先のメールボックスです。
 
-@param set コピーするメッセージの message sequence number
+@param set コピーするメッセージの UID
 @param mailbox コピー先のメールボックス(文字列)
 @see [[m:Net::IMAP#copy]]
 
@@ -816,7 +816,7 @@ search_key には検索条件を渡します。[[m:Net::IMAP#search]] と
 @param charset 検索条件の解釈に用いるCHARSET名(文字列)
 
 --- setquota(mailbox, quota) -> Net::IMAP::TaggedResponse
-SETQUOTA コマンドを送り、指定したメールボッススに
+SETQUOTA コマンドを送り、指定したメールボックスに
 quota を設定します。
 
 quota が nil ならば、mailbox の quota を破棄します。
@@ -833,7 +833,7 @@ quota が整数なら STORAGE をその値に変更します。
 
 --- getquota(mailbox) -> [Net::IMAP::MailboxQuota]
 GETQUOTA コマンドを送って
-指定したメールボッススの quota の情報を返します。
+指定したメールボックスの quota の情報を返します。
 
 quota の情報は [[c:Net::IMAP::MailboxQuota]] オブジェクトの配列で
 得られます。
@@ -1596,7 +1596,7 @@ Content-Disposition フィールドのパラメータをハッシュテーブルで
   * "SIZE"
 
 = class Net::IMAP::ThreadMember < Struct
-nn
+
 [[m:Net::IMAP#thread]]、 [[m:Net::IMAP#uid_thread]] から
 得られるスレッドの木構造のノードを表すクラスです。
 
