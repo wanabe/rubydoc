@@ -4,6 +4,9 @@ require irb/ext/workspaces
 irb 中の irb_workspaces、irb_push_workspace、irb_pop_workspace コマンド
 のための拡張を定義したサブライブラリです。
 
+このライブラリで定義されているメソッドはユーザが直接使用するものではあ
+りません。
+
 = class IRB::ExtendCommand::Workspaces < IRB::ExtendCommand::Nop
 
 irb 中の irb_workspaces コマンドのための拡張を定義したクラスです。
@@ -26,8 +29,8 @@ irb 中の irb_push_workspace コマンドのための拡張を定義したクラスです。
 
 UNIX シェルコマンドの pushd と同じです。
 
-@param obj [[IRB::WorkSpace]] オブジェクトを指定します。複数指定した場
-           合は先頭のオブジェクトのみが設定されます。
+@param obj [[c:IRB::WorkSpace]] オブジェクトを指定します。複数指定した
+           場合は先頭のオブジェクトのみが設定されます。
 
 = class IRB::ExtendCommand::PopWorkspace < IRB::ExtendCommand::Nop
 
