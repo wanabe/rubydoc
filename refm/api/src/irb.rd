@@ -4,10 +4,11 @@ require e2mmap
 require irb/init
 require irb/context
 require irb/extend-command
-#@# TODO: 追加する。
-#@# require irb/ruby-lex
+require irb/ruby-lex
 require irb/input-method
 require irb/locale
+#@# IRB.conf[:VERSION] を設定していない場合のみ。
+require irb/version
 
 irb は Interactive Ruby の略です。
 irb を使うと、Ruby の式を標準入力から簡単に入力・実行することができます。
@@ -43,10 +44,20 @@ readline ライブラリがインストールされている時には
   -f                ~/.irbrc を読み込まない
   -m                bc モード (分数と行列の計算ができる)
   -d                $DEBUG を true にする (ruby -d と同じ)
+#@since 1.9.2
+  -w                ruby -w と同じ
+  -W[level=2]       ruby -W と同じ
+#@end
+#@until 1.9.1
   -Kc               ruby -Kc と同じ
+#@end
   -r library        ruby -r と同じ
 #@since 1.8.2
   -I                ruby -I と同じ
+#@end
+#@since 1.9.1
+  -U                ruby -U と同じ
+  -E enc            ruby -E と同じ
 #@end
   --verbose         これから実行する行を表示する (デフォルト)
   --noverbose       これから実行する行を表示しない
@@ -63,6 +74,7 @@ readline ライブラリがインストールされている時には
                     ロンプトモードは、default/simple/xmp/inf-ruby。
   --inf-ruby-mode   emacsのinf-ruby-mode 用のプロンプト表示を行なう。
                     特に指定がない限り readline ライブラリは使わなくなる。
+  --sample-book-mode
   --simple-prompt
                     非常にシンプルなプロンプトを用いるモード。
   --noprompt        プロンプトを表示しない。
@@ -70,9 +82,17 @@ readline ライブラリがインストールされている時には
   --back-trace-limit n
                     バックトレース表示をバックトレースの頭から n、
                     うしろから n だけ行なう。デフォルト値は 16。
+  --context-mode    新しいワークスペースを作成した時に関連する Binding
+                    オブジェクトの作成方法をで設定する。(IRB::Context 参照)
+  --single-irb      irb 中で self を実行して得られるオブジェクトをサブ irb と共
+                    有する
   --irb_debug n     irb のデバッグレベルを n に設定する
                     (ユーザは利用すべきではない)
   -v, --version     irb のバージョンを表示する
+  -h, --help        irb のヘルプを表示する
+#@since 1.9.1
+  --                以降のコマンドライン引数をオプションとして扱わない
+#@end
 
 === irb のカスタマイズ
 
@@ -105,7 +125,9 @@ irb コマンドのオプションを指定したのと同じ効果が得られます。
   IRB.conf[:USE_TRACER] = true
   IRB.conf[:VERBOSE] = true
 
-==== プロンプトのカスタマイズ
+それぞれの設定値の詳細については、[[c:IRB::Context]] を参照してください。
+
+====[a:customize_prompt] プロンプトのカスタマイズ
 
 irb のプロンプトをカスタマイズしたい時は、
 まず独自のプロンプトモードを作成し、
@@ -117,6 +139,7 @@ irb のプロンプトをカスタマイズしたい時は、
   # 新しいプロンプトモード MY_PROMPT を作成する
   IRB.conf[:PROMPT][:MY_PROMPT] = {
     :PROMPT_I => nil,          # 通常時のプロンプト
+    :PROMPT_N => nil,          # 継続行のプロンプト
     :PROMPT_S => nil,          # 文字列などの継続行のプロンプト
     :PROMPT_C => nil,          # 式が継続している時のプロンプト
     :RETURN => "    ==>%s\n"   # メソッドから戻る時のプロンプト
@@ -138,7 +161,7 @@ PROMPT_I, PROMPT_S, PROMPT_C にはフォーマット文字列を指定します。
 フォーマット文字列で使用可能な記法は以下の通りです。
 
 : %N
-    起動しているコマンド名
+    起動しているコマンド名([[m:IRB::Context#irb_name]])
 : %m
     main オブジェクト (self) を to_s した文字列
 : %M
@@ -192,7 +215,7 @@ irb では、起動時の irb インタプリタとは独立した環境を持つ
 ローカル変数 x が見えなくなっています。
 これが「独立した環境」の意味です。
 
-=== サブ irb の設定
+===[a:configure_sub_irb] サブ irb の設定
 
 irb コマンド起動時のインタプリタの設定は
 コマンドラインオプションと IRB.conf の値で決まります。
@@ -593,7 +616,7 @@ irb では以下のように式を begin 〜 end でくくって入力してください。
 irb はシンボルであるかどうかの判断を間違えることがあります。
 具体的には、式が完了しているのに継続行と見なすことがあります。
 
-=== 履歴の保存
+===[a:history] 履歴の保存
 
 さらに、.irbrc で以下のように
 conf.save_history の値を指定しておくと、
@@ -659,6 +682,9 @@ irb の設定をハッシュで返します。
 --- version -> String
 
 IRB のバージョンを文字列で返します。
+
+~/.irbrc などの設定ファイル内で IRB.conf[:VERSION] を設定していた場合は
+任意のバージョンを返すように設定できます。
 
 --- CurrentContext -> IRB::Context
 

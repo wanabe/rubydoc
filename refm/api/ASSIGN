@@ -148,10 +148,11 @@ getopts                                         done
 gserver                         okkez           done
 iconv                           sho-h           done
 importenv                       mukai           done
+io/console                      sho-h           done
 io/nonblock                     ohai            done
 io/wait                         ohai            done
 ipaddr                          okkez           done
-irb                             sho-h
+irb                             sho-h           done
 jcode                           ohai            done
 json                            okkez           done
 kconv                           ohai            done
@@ -178,7 +179,7 @@ objspace                        sho-h           done
 observer                        snoozer05       done
 open-uri                                        done
 open3                           sho-h           done
-openssl                         ohai
+openssl                         ohai            done
 optparse                        sho-h           done
 ostruct                         eklerni         done
 
@@ -215,7 +216,7 @@ sha1                            okkez           done
 shell                           kouya           done
 shellwords                      m-kawato        done
 singleton                       snoozer05       done
-socket                          kouya
+socket                          ohai
 stringio                                        done
 strscan                         kouya           done
 sync                            kouya           done

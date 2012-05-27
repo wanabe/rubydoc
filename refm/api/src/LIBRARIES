@@ -123,6 +123,10 @@ iconv
 #@until 1.9.1
 importenv
 #@end
+#@since 1.9.3
+io/console
+io/console/size
+#@end
 #@since 1.8.0
 io/nonblock
 io/wait
@@ -138,6 +142,15 @@ irb/cmd/subirb
 irb/completion
 irb/context
 irb/extend-command
+irb/ext/change-ws
+irb/ext/history
+irb/ext/loader
+irb/ext/math-mode
+irb/ext/multi-irb
+irb/ext/save-history
+irb/ext/tracer
+irb/ext/use-loader
+irb/ext/workspaces
 irb/frame
 irb/help
 irb/init
@@ -152,6 +165,12 @@ irb/src_encoding
 #@end
 irb/notifier
 irb/output-method
+irb/ruby-lex
+irb/ruby-token
+irb/slex
+irb/version
+irb/workspace
+irb/ws-for-case-2
 irb/xmp
 #@until 1.9.1
 jcode

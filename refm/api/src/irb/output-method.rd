@@ -8,7 +8,7 @@ irb が出力を扱うためのサブライブラリです。
 
 == Instance Methods
 
---- print(*opts)
+--- print(*objs)
 
 [[c:NotImplementedError]] が発生します。
 
@@ -16,7 +16,7 @@ irb が出力を扱うためのサブライブラリです。
 
 @raise NotImplementedError 必ず発生します。
 
---- printn(*opts) -> nil
+--- printn(*objs) -> nil
 
 各 obj を self に出力し、最後に改行を出力します。
 
@@ -51,13 +51,13 @@ irb が出力を扱うためのサブライブラリです。
 #@# 使用されていない事、1.9.1 で削除されている事から省略しました。
 #@# --- foo(format)
 
-= class IRB::StdioOutputMethod < OutputMethod
+= class IRB::StdioOutputMethod < IRB::OutputMethod
 
 標準出力を表すクラスです。ライブラリ内部で使用します。
 
 == Instance Methods
 
---- print(*opts) -> nil
+--- print(*objs) -> nil
 
 引数を標準出力に出力します。
 

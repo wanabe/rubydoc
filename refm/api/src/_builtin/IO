@@ -7,7 +7,7 @@ include File::Constants
 
 基本的な入出力機能のためのクラスです。
 
-  * [[unknown:Traps: IO ポートのオープンに関わる問題|trap::IO]]
+#@#  * [[unknown:Traps: IO ポートのオープンに関わる問題|trap::IO]]
 
 #@if (version >="1.8.0")
 File::Constants は、[[c:File]] から IO へ移動しました。
@@ -734,7 +734,8 @@ dup は内容の等しいフリーズされていない IO を返します。
 
 以後このポートに対して入出力を行うと例外 [[c:IOError]] が発生しま
 す。ガーベージコレクトの際にはクローズされていない IO ポートはクロー
-ズされます。[[unknown:Traps:closeをGCにまかせる|trap::IO]] 
+ズされます。
+#@# [[unknown:Traps:closeをGCにまかせる|trap::IO]]
 self がパイプでプロセスにつながっていれば、そのプロセスの終
 了を待ち合わせます。
 
@@ -1626,7 +1627,7 @@ IO をノンブロッキングモードに設定し、string を [[man:write(2)]] システムコールで
 write(2) が成功した場合、書き込んだ長さを返します。
 EAGAIN, EINTR などは例外 [[c:Errno::EXXX]] として呼出元に報告されます。
 #@since 1.8.7
-書き込んだバイト数(つまり返り値)は [[c:String#bytesize]] の
+書き込んだバイト数(つまり返り値)は [[m:String#bytesize]] の
 値より小さい可能性があります。
 #@end
 
